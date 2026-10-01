@@ -1,18 +1,54 @@
 {
   "site": {
-    "eyebrow": { "en": "Profiles — Key Strengths", "es": "Perfiles — Fortalezas clave" },
-    "title": { "en": "Senior sales, growth and AI profiles", "es": "Perfiles senior de ventas, growth e IA" },
+    "eyebrow": {
+      "en": "Profiles — Key Strengths",
+      "es": "Perfiles — Fortalezas clave"
+    },
+    "title": {
+      "en": "Senior sales, growth and AI profiles",
+      "es": "Perfiles senior de ventas, growth e IA"
+    },
     "subtitle": {
       "en": "Argentina-based professionals with senior-level experience selling to, marketing for and building for US and international companies.",
       "es": "Profesionales basados en Argentina con experiencia senior en ventas, marketing y desarrollo para empresas de EE.UU. e internacionales."
     }
   },
   "categories": [
-    { "id": "sdr", "name": { "en": "SDR", "es": "SDR" } },
-    { "id": "marketing-growth", "name": { "en": "Marketing / Growth", "es": "Marketing / Growth" } },
-    { "id": "sales-executive", "name": { "en": "Sales Executive", "es": "Ejecutivo de Ventas" } },
-    { "id": "account-manager", "name": { "en": "Account Manager", "es": "Account Manager" } },
-    { "id": "automation", "name": { "en": "Automation", "es": "Automatización" } }
+    {
+      "id": "sdr",
+      "name": {
+        "en": "SDR",
+        "es": "SDR"
+      }
+    },
+    {
+      "id": "marketing-growth",
+      "name": {
+        "en": "Marketing / Growth",
+        "es": "Marketing / Growth"
+      }
+    },
+    {
+      "id": "sales-executive",
+      "name": {
+        "en": "Sales Executive",
+        "es": "Ejecutivo de Ventas"
+      }
+    },
+    {
+      "id": "account-manager",
+      "name": {
+        "en": "Account Manager",
+        "es": "Account Manager"
+      }
+    },
+    {
+      "id": "automation",
+      "name": {
+        "en": "Automation",
+        "es": "Automatización"
+      }
+    }
   ],
   "profiles": [
     {
@@ -21,8 +57,11 @@
       "lastInitial": "D",
       "category": "sdr",
       "visible": true,
-      "photo": "",
-      "role": { "en": "Senior SDR, Full-Cycle Sales", "es": "SDR Senior, Ventas de Ciclo Completo" },
+      "photo": "photos/juan-cruz-d-mupylm70.jpg",
+      "role": {
+        "en": "Senior SDR, Full-Cycle Sales",
+        "es": "SDR Senior, Ventas de Ciclo Completo"
+      },
       "highlights": {
         "en": [
           "6 years of outbound for US and Canadian companies, from high-volume cold calling (~140 calls a day) to running meetings with CTOs and CEOs.",
@@ -47,7 +86,10 @@
       "category": "sdr",
       "visible": true,
       "photo": "",
-      "role": { "en": "SDR", "es": "SDR" },
+      "role": {
+        "en": "SDR",
+        "es": "SDR"
+      },
       "highlights": {
         "en": [
           "5 years of outbound, almost entirely for US companies plus two years for the UK market.",
@@ -74,7 +116,10 @@
       "category": "marketing-growth",
       "visible": true,
       "photo": "",
-      "role": { "en": "Growth Marketing Manager", "es": "Growth Marketing Manager" },
+      "role": {
+        "en": "Growth Marketing Manager",
+        "es": "Growth Marketing Manager"
+      },
       "highlights": {
         "en": [
           "6 years working with US companies and startups, on top of 15+ years in marketing and analytics.",
@@ -101,7 +146,10 @@
       "category": "marketing-growth",
       "visible": true,
       "photo": "",
-      "role": { "en": "Growth Marketing & Digital Product Manager", "es": "Growth Marketing & Digital Product Manager" },
+      "role": {
+        "en": "Growth Marketing & Digital Product Manager",
+        "es": "Growth Marketing & Digital Product Manager"
+      },
       "highlights": {
         "en": [
           "15+ years in digital marketing and product across media, SaaS and subscription businesses.",
@@ -128,7 +176,10 @@
       "category": "sales-executive",
       "visible": true,
       "photo": "",
-      "role": { "en": "Technical Account Executive", "es": "Technical Account Executive" },
+      "role": {
+        "en": "Technical Account Executive",
+        "es": "Technical Account Executive"
+      },
       "highlights": {
         "en": [
           "6+ years of technical B2B sales at Intel and Dell, today covering enterprise accounts on the US West Coast.",
@@ -155,7 +206,10 @@
       "category": "sales-executive",
       "visible": true,
       "photo": "",
-      "role": { "en": "Account Executive, Enterprise Software & Staff Augmentation", "es": "Account Executive, Software Enterprise y Staff Augmentation" },
+      "role": {
+        "en": "Account Executive, Enterprise Software & Staff Augmentation",
+        "es": "Account Executive, Software Enterprise y Staff Augmentation"
+      },
       "highlights": {
         "en": [
           "6 years selling to the US market; native English speaker who runs every call directly with CTOs and engineering leaders.",
@@ -182,7 +236,10 @@
       "category": "account-manager",
       "visible": true,
       "photo": "",
-      "role": { "en": "Senior Account Manager", "es": "Senior Account Manager" },
+      "role": {
+        "en": "Senior Account Manager",
+        "es": "Senior Account Manager"
+      },
       "highlights": {
         "en": [
           "Manages a North American portfolio for a US marketplace (CookUnity) representing 20–25% of its revenue, with 100% retention.",
@@ -209,7 +266,10 @@
       "category": "account-manager",
       "visible": true,
       "photo": "",
-      "role": { "en": "Account Manager, B2B SaaS Partnerships", "es": "Account Manager, Partnerships SaaS B2B" },
+      "role": {
+        "en": "Account Manager, B2B SaaS Partnerships",
+        "es": "Account Manager, Partnerships SaaS B2B"
+      },
       "highlights": {
         "en": [
           "Manages 40–60 partner accounts for a California-based cybersecurity SaaS company, covering the US, Europe, LATAM, the Middle East and Asia-Pacific.",
@@ -236,7 +296,10 @@
       "category": "automation",
       "visible": true,
       "photo": "",
-      "role": { "en": "AI Automation Specialist", "es": "Especialista en Automatización con IA" },
+      "role": {
+        "en": "AI Automation Specialist",
+        "es": "Especialista en Automatización con IA"
+      },
       "highlights": {
         "en": [
           "Designs and ships AI workflows in n8n with the OpenAI API, WhatsApp Business and Google APIs, in production for 1,000+ active users.",
@@ -263,7 +326,10 @@
       "category": "automation",
       "visible": true,
       "photo": "",
-      "role": { "en": "AI Engineer", "es": "AI Engineer" },
+      "role": {
+        "en": "AI Engineer",
+        "es": "AI Engineer"
+      },
       "highlights": {
         "en": [
           "5+ years as a backend and full-stack engineer, now focused on production AI systems.",
