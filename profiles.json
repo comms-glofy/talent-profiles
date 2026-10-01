@@ -1,0 +1,287 @@
+{
+  "site": {
+    "eyebrow": { "en": "Profiles — Key Strengths", "es": "Perfiles — Fortalezas clave" },
+    "title": { "en": "Senior sales, growth and AI profiles", "es": "Perfiles senior de ventas, growth e IA" },
+    "subtitle": {
+      "en": "Argentina-based professionals with senior-level experience selling to, marketing for and building for US and international companies.",
+      "es": "Profesionales basados en Argentina con experiencia senior en ventas, marketing y desarrollo para empresas de EE.UU. e internacionales."
+    }
+  },
+  "categories": [
+    { "id": "sdr", "name": { "en": "SDR", "es": "SDR" } },
+    { "id": "marketing-growth", "name": { "en": "Marketing / Growth", "es": "Marketing / Growth" } },
+    { "id": "sales-executive", "name": { "en": "Sales Executive", "es": "Ejecutivo de Ventas" } },
+    { "id": "account-manager", "name": { "en": "Account Manager", "es": "Account Manager" } },
+    { "id": "automation", "name": { "en": "Automation", "es": "Automatización" } }
+  ],
+  "profiles": [
+    {
+      "id": "juan-cruz-d",
+      "firstName": "Juan Cruz",
+      "lastInitial": "D",
+      "category": "sdr",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "Senior SDR, Full-Cycle Sales", "es": "SDR Senior, Ventas de Ciclo Completo" },
+      "highlights": {
+        "en": [
+          "6 years of outbound for US and Canadian companies, from high-volume cold calling (~140 calls a day) to running meetings with CTOs and CEOs.",
+          "Built an outbound engine from scratch: AmpleMarket managing 7 LinkedIn accounts, integrated with HubSpot, with Claude for hyper-personalized messaging.",
+          "Goes beyond booking meetings: sourced and closed a US$240K project and closes 3–4 software subscriptions a month.",
+          "Has sold both a software product (to US schools and colleges) and staff augmentation services, so he can pitch either model.",
+          "Fluent English and fluent with the US sales stack: HubSpot, Salesforce, Apollo, ZoomInfo, Lusha, Sales Navigator, 6sense."
+        ],
+        "es": [
+          "6 años de outbound para empresas de EE.UU. y Canadá, desde cold calling de alto volumen (~140 llamadas por día) hasta reuniones con CTOs y CEOs.",
+          "Construyó un motor de outbound desde cero: AmpleMarket gestionando 7 cuentas de LinkedIn, integrado con HubSpot, con Claude para mensajes hiperpersonalizados.",
+          "Va más allá de agendar reuniones: originó y cerró un proyecto de US$240K y cierra 3–4 suscripciones de software por mes.",
+          "Vendió tanto un producto de software (a escuelas y colleges de EE.UU.) como servicios de staff augmentation, por lo que puede presentar cualquiera de los dos modelos.",
+          "Inglés fluido y dominio del stack de ventas de EE.UU.: HubSpot, Salesforce, Apollo, ZoomInfo, Lusha, Sales Navigator, 6sense."
+        ]
+      }
+    },
+    {
+      "id": "santiago-h",
+      "firstName": "Santiago",
+      "lastInitial": "H",
+      "category": "sdr",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "SDR", "es": "SDR" },
+      "highlights": {
+        "en": [
+          "5 years of outbound, almost entirely for US companies plus two years for the UK market.",
+          "Currently an SDR for a US company, booking meetings with CEOs, CFOs and owners for sales managers in Florida, Texas and California.",
+          "Works at US-team volume: 600 dials a week through a power dialer, plus LinkedIn and automated email sequences.",
+          "Methodical and process-driven: weekly script refinement and performance review, with a clear focus on selling the meeting.",
+          "Former English teacher: clear, confident phone presence, which is the core of the SDR role.",
+          "Hands-on with the standard US SDR toolkit: Salesforce, HubSpot, ZoomInfo, Cognism, Outreach, Smartlead, Orum."
+        ],
+        "es": [
+          "5 años de outbound, casi en su totalidad para empresas de EE.UU., más dos años para el mercado del Reino Unido.",
+          "Actualmente es SDR en una empresa de EE.UU., agendando reuniones con CEOs, CFOs y dueños para sales managers en Florida, Texas y California.",
+          "Trabaja al volumen de un equipo estadounidense: 600 llamadas por semana con power dialer, más LinkedIn y secuencias de email automatizadas.",
+          "Metódico y orientado a procesos: ajuste semanal del script y revisión de performance, con foco claro en vender la reunión.",
+          "Ex profesor de inglés: presencia telefónica clara y segura, el núcleo del rol de SDR.",
+          "Experiencia práctica con el toolkit estándar de SDR en EE.UU.: Salesforce, HubSpot, ZoomInfo, Cognism, Outreach, Smartlead, Orum."
+        ]
+      }
+    },
+    {
+      "id": "manuel-v",
+      "firstName": "Manuel",
+      "lastInitial": "V",
+      "category": "marketing-growth",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "Growth Marketing Manager", "es": "Growth Marketing Manager" },
+      "highlights": {
+        "en": [
+          "6 years working with US companies and startups, on top of 15+ years in marketing and analytics.",
+          "Proven cost-efficiency: cut CAC from $200 to $125 (-37%) while growing monthly installs from 4.5K to 7.5K, with no extra spend.",
+          "First marketing hire at an AI SaaS startup: led its US go-to-market from zero and reached 23K users in 5 months.",
+          "Has managed paid media budgets of US$70K–100K a month and a 5-person marketing team.",
+          "Strong data foundation (business intelligence for Whirlpool, Nielsen for Unilever): connects channel metrics to real revenue, not just clicks.",
+          "Hands-on across Meta, Google and LinkedIn Ads, GA4, Tag Manager, Branch and Looker Studio."
+        ],
+        "es": [
+          "6 años trabajando con empresas y startups de EE.UU., sobre más de 15 años en marketing y analytics.",
+          "Eficiencia de costos comprobada: redujo el CAC de $200 a $125 (-37%) mientras las instalaciones mensuales crecieron de 4.5K a 7.5K, sin inversión adicional.",
+          "Primera contratación de marketing en una startup SaaS de IA: lideró su go-to-market en EE.UU. desde cero y alcanzó 23K usuarios en 5 meses.",
+          "Gestionó presupuestos de paid media de US$70K–100K mensuales y un equipo de marketing de 5 personas.",
+          "Sólida base en datos (business intelligence para Whirlpool, Nielsen para Unilever): conecta las métricas de cada canal con ingresos reales, no solo con clics.",
+          "Experiencia práctica en Meta, Google y LinkedIn Ads, GA4, Tag Manager, Branch y Looker Studio."
+        ]
+      }
+    },
+    {
+      "id": "rodrigo-m",
+      "firstName": "Rodrigo",
+      "lastInitial": "M",
+      "category": "marketing-growth",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "Growth Marketing & Digital Product Manager", "es": "Growth Marketing & Digital Product Manager" },
+      "highlights": {
+        "en": [
+          "15+ years in digital marketing and product across media, SaaS and subscription businesses.",
+          "Advised global publishers including Fortune, Business Insider and TechCrunch on subscriptions, pricing and customer journeys.",
+          "Ran 5 simultaneous A/B tests for Fortune that showed it could raise a subscription price by 300%.",
+          "Led a major Argentine financial newspaper's move from print to digital, building its social media and data teams and its Mexico launch plan.",
+          "Today runs SEO and content operations for US clients, coordinating a content team of ~15 people.",
+          "Covers the full growth toolkit: SEO, CRM and lifecycle (HubSpot, Klaviyo), paid media, analytics and AI-assisted content."
+        ],
+        "es": [
+          "Más de 15 años en marketing digital y producto en medios, SaaS y negocios de suscripción.",
+          "Asesoró a publishers globales como Fortune, Business Insider y TechCrunch en suscripciones, pricing y customer journeys.",
+          "Ejecutó 5 A/B tests simultáneos para Fortune que demostraron que podía aumentar el precio de una suscripción en un 300%.",
+          "Lideró la transición de un importante diario financiero argentino del papel al digital, armando sus equipos de redes sociales y datos y su plan de lanzamiento en México.",
+          "Hoy dirige operaciones de SEO y contenido para clientes de EE.UU., coordinando un equipo de contenido de ~15 personas.",
+          "Cubre todo el toolkit de growth: SEO, CRM y lifecycle (HubSpot, Klaviyo), paid media, analytics y contenido asistido por IA."
+        ]
+      }
+    },
+    {
+      "id": "nazareno-l",
+      "firstName": "Nazareno",
+      "lastInitial": "L",
+      "category": "sales-executive",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "Technical Account Executive", "es": "Technical Account Executive" },
+      "highlights": {
+        "en": [
+          "6+ years of technical B2B sales at Intel and Dell, today covering enterprise accounts on the US West Coast.",
+          "Reached 120% of quota in 2025.",
+          "Owns both sides of the deal: runs discovery, demos and proofs of concept himself, then negotiates and closes.",
+          "Won a VC-funded edge-AI startup end to end, from architecture design and a Red Hat proof of concept to a rollout of ~5 data centers.",
+          "Built Intel's IoT business in LATAM from zero, signing new partner logos; ran 100+ demos that cut sales cycles by 20%.",
+          "Engineering background (cloud, data center, APIs, security) lets him sell credibly to CTOs and engineering teams."
+        ],
+        "es": [
+          "Más de 6 años de ventas técnicas B2B en Intel y Dell; hoy cubre cuentas enterprise en la Costa Oeste de EE.UU.",
+          "Alcanzó el 120% de su cuota en 2025.",
+          "Maneja ambos lados del deal: conduce él mismo discovery, demos y pruebas de concepto, y luego negocia y cierra.",
+          "Ganó de punta a punta una startup de edge AI financiada por VC, desde el diseño de arquitectura y una prueba de concepto con Red Hat hasta un despliegue en ~5 data centers.",
+          "Construyó desde cero el negocio de IoT de Intel en LATAM, sumando nuevos partners; realizó más de 100 demos que redujeron los ciclos de venta un 20%.",
+          "Su formación en ingeniería (cloud, data center, APIs, seguridad) le permite vender con credibilidad a CTOs y equipos de ingeniería."
+        ]
+      }
+    },
+    {
+      "id": "federico-f",
+      "firstName": "Federico",
+      "lastInitial": "F",
+      "category": "sales-executive",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "Account Executive, Enterprise Software & Staff Augmentation", "es": "Account Executive, Software Enterprise y Staff Augmentation" },
+      "highlights": {
+        "en": [
+          "6 years selling to the US market; native English speaker who runs every call directly with CTOs and engineering leaders.",
+          "Closes enterprise software and staff augmentation deals of US$100K to US$1M, signing 3–6 new clients per quarter.",
+          "Sells exactly the services a staff augmentation buyer is evaluating, so he knows their objections and buying process first-hand.",
+          "Grows accounts after the close and turns clients into referral partners that bring in new opportunities.",
+          "Has worked the whole funnel: promoted from BDR to AE in three months, led a 3-person sales team, and built a US client base from scratch through outbound.",
+          "Fluent with the US sales stack: Salesforce, HubSpot, Sales Navigator, Apollo, Clay, ZoomInfo and MSA/SOW tools."
+        ],
+        "es": [
+          "6 años vendiendo al mercado de EE.UU.; hablante nativo de inglés que conduce cada llamada directamente con CTOs y líderes de ingeniería.",
+          "Cierra deals de software enterprise y staff augmentation de US$100K a US$1M, sumando 3–6 clientes nuevos por trimestre.",
+          "Vende exactamente los servicios que evalúa un comprador de staff augmentation, por lo que conoce de primera mano sus objeciones y su proceso de compra.",
+          "Hace crecer las cuentas después del cierre y convierte a los clientes en referentes que traen nuevas oportunidades.",
+          "Trabajó todo el funnel: pasó de BDR a AE en tres meses, lideró un equipo de ventas de 3 personas y construyó una base de clientes en EE.UU. desde cero vía outbound.",
+          "Dominio del stack de ventas de EE.UU.: Salesforce, HubSpot, Sales Navigator, Apollo, Clay, ZoomInfo y herramientas de MSA/SOW."
+        ]
+      }
+    },
+    {
+      "id": "enrico-t",
+      "firstName": "Enrico",
+      "lastInitial": "T",
+      "category": "account-manager",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "Senior Account Manager", "es": "Senior Account Manager" },
+      "highlights": {
+        "en": [
+          "Manages a North American portfolio for a US marketplace (CookUnity) representing 20–25% of its revenue, with 100% retention.",
+          "Turns underperforming accounts into growth: portfolio changes, category expansion and upsells backed by revenue projections.",
+          "Closed 150+ B2B deals as the first commercial hire of a new business unit, growing its volume by 45% and its gross margin from 5% to 17%.",
+          "Saved a major account at risk of churning by bringing in a new carrier and negotiating better rates in the same move.",
+          "Built retention and health-score frameworks from scratch, plus AI-powered reporting adopted across his team.",
+          "Analytical edge rare in account management: SQL, Looker and Tableau, with data-backed business cases for every upsell."
+        ],
+        "es": [
+          "Gestiona una cartera norteamericana para un marketplace de EE.UU. (CookUnity) que representa el 20–25% de sus ingresos, con 100% de retención.",
+          "Convierte cuentas de bajo rendimiento en crecimiento: cambios de portfolio, expansión de categorías y upsells respaldados por proyecciones de ingresos.",
+          "Cerró más de 150 deals B2B como primera contratación comercial de una nueva unidad de negocio, haciendo crecer su volumen un 45% y su margen bruto del 5% al 17%.",
+          "Rescató una cuenta clave en riesgo de churn incorporando un nuevo carrier y negociando mejores tarifas en el mismo movimiento.",
+          "Construyó desde cero frameworks de retención y health score, además de reportes con IA adoptados por todo su equipo.",
+          "Perfil analítico poco común en account management: SQL, Looker y Tableau, con business cases basados en datos para cada upsell."
+        ]
+      }
+    },
+    {
+      "id": "alberto-a",
+      "firstName": "Alberto",
+      "lastInitial": "A",
+      "category": "account-manager",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "Account Manager, B2B SaaS Partnerships", "es": "Account Manager, Partnerships SaaS B2B" },
+      "highlights": {
+        "en": [
+          "Manages 40–60 partner accounts for a California-based cybersecurity SaaS company, covering the US, Europe, LATAM, the Middle East and Asia-Pacific.",
+          "Consistently hits target: 107% in 2024 (US$320K vs US$300K) and 100% in 2025 (US$310K), plus internal awards for best partner sales rep and best presentation.",
+          "Grows accounts well beyond the average: closed a US$50K deal in the UAE, about 10x the usual ticket.",
+          "Opened new markets: the company's first partner in Japan, which led to a new AWS region there, and its first technology partnership with ESET.",
+          "Runs the full cycle himself, from inbound discovery and technical demos to contract, renewals, upsell and cross-sell.",
+          "Knows how to sell value to small and mid-market buyers on top of a free product, with working knowledge of SOC 2, HIPAA and GDPR."
+        ],
+        "es": [
+          "Gestiona 40–60 cuentas de partners para una empresa SaaS de ciberseguridad con base en California, cubriendo EE.UU., Europa, LATAM, Medio Oriente y Asia-Pacífico.",
+          "Cumple objetivos de forma consistente: 107% en 2024 (US$320K vs US$300K) y 100% en 2025 (US$310K), más premios internos a mejor vendedor de partners y mejor presentación.",
+          "Hace crecer las cuentas muy por encima del promedio: cerró un deal de US$50K en Emiratos Árabes Unidos, unas 10 veces el ticket habitual.",
+          "Abrió nuevos mercados: el primer partner de la empresa en Japón, que derivó en una nueva región de AWS allí, y su primera alianza tecnológica con ESET.",
+          "Maneja el ciclo completo él mismo, desde el discovery inbound y las demos técnicas hasta el contrato, renovaciones, upsell y cross-sell.",
+          "Sabe vender valor a compradores pequeños y mid-market sobre un producto gratuito, con conocimiento práctico de SOC 2, HIPAA y GDPR."
+        ]
+      }
+    },
+    {
+      "id": "heitor-c",
+      "firstName": "Heitor",
+      "lastInitial": "C",
+      "category": "automation",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "AI Automation Specialist", "es": "Especialista en Automatización con IA" },
+      "highlights": {
+        "en": [
+          "Designs and ships AI workflows in n8n with the OpenAI API, WhatsApp Business and Google APIs, in production for 1,000+ active users.",
+          "Built WhatsApp agents for healthcare clinics: appointment reminders, confirmations, rescheduling and handoff to a human.",
+          "Solves what platforms don't support out of the box, such as a custom Google Calendar scheduling integration built in n8n.",
+          "Deployed an AI assistant for a client handling 1,000–2,000 WhatsApp contacts a day, answering payment and invoice questions.",
+          "Codes when no-code falls short (Node.js, Python, SQL) and owns the work from client discovery to QA and go-live.",
+          "Fluent in Spanish, English and Portuguese; finishing a software development degree at a US university."
+        ],
+        "es": [
+          "Diseña y pone en producción workflows de IA en n8n con la API de OpenAI, WhatsApp Business y APIs de Google, en uso por más de 1.000 usuarios activos.",
+          "Construyó agentes de WhatsApp para clínicas de salud: recordatorios, confirmaciones y reprogramación de turnos, y derivación a una persona.",
+          "Resuelve lo que las plataformas no soportan de forma nativa, como una integración de agenda con Google Calendar desarrollada a medida en n8n.",
+          "Implementó un asistente de IA para un cliente que gestiona entre 1.000 y 2.000 contactos de WhatsApp por día, respondiendo consultas de pagos y facturas.",
+          "Programa cuando el no-code no alcanza (Node.js, Python, SQL) y se ocupa del trabajo desde el discovery con el cliente hasta QA y go-live.",
+          "Fluido en español, inglés y portugués; está terminando una carrera de desarrollo de software en una universidad de EE.UU."
+        ]
+      }
+    },
+    {
+      "id": "manuel-d",
+      "firstName": "Manuel",
+      "lastInitial": "D",
+      "category": "automation",
+      "visible": true,
+      "photo": "",
+      "role": { "en": "AI Engineer", "es": "AI Engineer" },
+      "highlights": {
+        "en": [
+          "5+ years as a backend and full-stack engineer, now focused on production AI systems.",
+          "Built solo, from zero, a 24/7 ad-detection pipeline that monitors 16 TV channels with speech-to-text (Whisper) and fingerprinting on local GPUs.",
+          "Builds WhatsApp sales agents with LangGraph and LLM tool calling, connected to e-commerce catalogs and running for several stores.",
+          "Works with the modern AI stack: LangGraph, LangChain, Gemini, OpenAI, Text2SQL and pgvector.",
+          "Solid engineering base: Python, TypeScript, Node.js and Go, with CI/CD on AWS (EKS) and GCP.",
+          "Used to startup autonomy: takes a project from research and benchmarks to deployment on his own."
+        ],
+        "es": [
+          "Más de 5 años como ingeniero backend y full-stack, hoy enfocado en sistemas de IA en producción.",
+          "Construyó solo y desde cero un pipeline de detección de publicidad 24/7 que monitorea 16 canales de TV con speech-to-text (Whisper) y fingerprinting sobre GPUs locales.",
+          "Desarrolla agentes de ventas para WhatsApp con LangGraph y tool calling de LLMs, conectados a catálogos de e-commerce y funcionando para varias tiendas.",
+          "Trabaja con el stack moderno de IA: LangGraph, LangChain, Gemini, OpenAI, Text2SQL y pgvector.",
+          "Sólida base de ingeniería: Python, TypeScript, Node.js y Go, con CI/CD en AWS (EKS) y GCP.",
+          "Acostumbrado a la autonomía de una startup: lleva un proyecto por su cuenta desde la investigación y los benchmarks hasta el deploy."
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Glofy · Profiles Admin</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#212121;--bg2:#292929;--card:#333;--field:#1b1b1b;--lime:#ceff00;--txt:#ededed;--mut:#a3a3a3;--line:rgba(237,237,237,.12);--red:#ff6b6b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:Montserrat,system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:inherit}
+
+.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:12px 24px;background:rgba(33,33,33,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.logo{height:22px;display:block}
+.top .ttl{font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);padding-left:14px;border-left:1px solid var(--line)}
+.sp{flex:1}
+.status{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:8px}
+.status i{width:8px;height:8px;border-radius:50%;background:#666;display:inline-block}
+.status.ok i{background:var(--lime)}
+.status.dirty i{background:#ffb84d}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);font-weight:700;font-size:12.5px;letter-spacing:.03em;transition:.18s;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--lime);color:var(--lime)}
+.btn.pri{background:var(--lime);border-color:var(--lime);color:#212121}
+.btn.pri:hover{filter:brightness(1.06);color:#212121}
+.btn.pri:disabled{background:#3a3a3a;border-color:#3a3a3a;color:#777;cursor:not-allowed}
+.btn.danger{color:var(--red);border-color:rgba(255,107,107,.35)}
+.btn.danger:hover{background:rgba(255,107,107,.1);color:var(--red);border-color:var(--red)}
+.btn.sm{padding:6px 12px;font-size:12px}
+.ibtn{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--mut);transition:.15s}
+.ibtn:hover{background:var(--card);color:var(--lime)}
+.ibtn:disabled{opacity:.25;pointer-events:none}
+.ibtn svg{width:14px;height:14px}
+
+.tabs{display:flex;gap:4px;padding:16px 24px 0;max-width:1400px;margin:0 auto;border-bottom:1px solid var(--line)}
+.tab{padding:11px 16px;font-weight:700;font-size:13px;color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.on{color:var(--txt);border-color:var(--lime)}
+.tab:hover{color:var(--txt)}
+
+.page{max-width:1400px;margin:0 auto;padding:22px 24px 120px}
+.layout{display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start}
+.panel{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px}
+.side{position:sticky;top:72px;max-height:calc(100vh - 92px);display:flex;flex-direction:column;padding:14px}
+.side-tools{display:flex;gap:8px;margin-bottom:10px}
+.side-tools input,.side-tools select{flex:1;min-width:0}
+.plist{overflow:auto;margin:0 -6px;padding:0 6px}
+.pgroup{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin:14px 4px 6px}
+.pitem{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;cursor:pointer;border:1px solid transparent}
+.pitem:hover{background:rgba(255,255,255,.03)}
+.pitem.on{background:rgba(206,255,0,.07);border-color:rgba(206,255,0,.35)}
+.thumb{width:40px;height:40px;border-radius:10px;overflow:hidden;background:var(--card);flex:none;display:grid;place-items:center;font-weight:800;color:var(--lime);font-size:13px;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:center 22%;position:absolute;inset:0}
+.pmeta{flex:1;min-width:0}
+.pmeta b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pmeta span{display:block;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:#444;color:#ccc}
+.badge.warn{background:rgba(255,184,77,.15);color:#ffb84d}
+.arrows{display:flex;flex-direction:column}
+.arrows .ibtn{height:18px}
+
+label.f{display:block;margin-bottom:14px}
+label.f>span{display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+label.f>span em{font-style:normal;color:var(--lime);text-transform:none;letter-spacing:0;font-weight:600;margin-left:6px}
+input[type=text],input[type=password],select,textarea{width:100%;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--lime)}
+textarea{resize:vertical;line-height:1.5;min-height:80px}
+.hint{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.45}
+.hint.warn{color:#ffb84d}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row-name{display:grid;grid-template-columns:1fr 150px;gap:14px}
+
+.ed-head{display:flex;align-items:center;gap:18px;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.ed-photo{width:96px;height:120px;border-radius:14px;overflow:hidden;background:var(--card);position:relative;display:grid;place-items:center;font-size:32px;font-weight:800;color:var(--lime);flex:none}
+.ed-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.pv-name{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.pv-sub{color:var(--mut);font-size:13px;margin-top:4px}
+.switch{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:13px;cursor:pointer;user-select:none}
+.switch input{appearance:none;width:40px;height:22px;border-radius:999px;background:#555;position:relative;cursor:pointer;transition:.2s}
+.switch input:before{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#eee;transition:.2s}
+.switch input:checked{background:var(--lime)}
+.switch input:checked:before{left:21px;background:#212121}
+
+.lang-h{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--mut);margin:8px 0 10px}
+.lang-h b{background:var(--card);color:var(--txt);border-radius:6px;padding:3px 7px}
+.drop{border:1.5px dashed rgba(237,237,237,.25);border-radius:14px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--lime);background:rgba(206,255,0,.04)}
+.drop input{display:none}
+.drop svg{width:26px;height:26px;color:var(--lime);flex:none}
+.drop b{display:block}
+.drop span{font-size:12px;color:var(--mut)}
+.ed-foot{display:flex;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+
+.empty{padding:70px 20px;text-align:center;color:var(--mut)}
+.empty b{display:block;color:var(--txt);font-size:16px;margin-bottom:6px}
+
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);text-align:left;padding:8px 8px}
+td{padding:6px 8px;vertical-align:middle;border-top:1px solid var(--line)}
+td.id{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--mut)}
+td.n{color:var(--mut);font-size:12px;white-space:nowrap}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;background:#f4f4f4;color:#212121;font-weight:600;padding:12px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);transition:.25s;z-index:100;max-width:min(560px,92vw);font-size:13px;line-height:1.45;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.toast.err{background:var(--red);color:#fff}
+.busy{position:fixed;inset:0;background:rgba(20,20,20,.65);display:none;place-items:center;z-index:90}
+.busy.show{display:grid}
+.busy div{background:var(--bg2);border:1px solid var(--line);padding:20px 26px;border-radius:14px;font-weight:700;display:flex;gap:12px;align-items:center}
+.spin{width:18px;height:18px;border:2.5px solid #555;border-top-color:var(--lime);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.note{background:rgba(206,255,0,.06);border:1px solid rgba(206,255,0,.25);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.55;margin-bottom:16px}
+.note b{color:var(--lime)}
+.maxw{max-width:760px}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .side{position:static;max-height:none}
+  .plist{max-height:320px}
+  .row2,.row-name{grid-template-columns:1fr}
+  .top{flex-wrap:wrap;padding:10px 14px}
+  .top .ttl{display:none}
+  .page,.tabs{padding-left:14px;padding-right:14px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <img class="logo" src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png" alt="Glofy">
+  <span class="ttl">Profiles Admin</span>
+  <div class="sp"></div>
+  <span class="status" id="status"><i></i><span>Sin conexión</span></span>
+  <a class="btn" id="viewLink" href="./" target="_blank" rel="noopener">Ver landing ↗</a>
+  <button class="btn" id="discardBtn" style="display:none">Descartar</button>
+  <button class="btn pri" id="publishBtn" disabled>Publicar cambios</button>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab on" data-tab="profiles">Perfiles</button>
+  <button class="tab" data-tab="categories">Categorías</button>
+  <button class="tab" data-tab="texts">Textos de la landing</button>
+  <button class="tab" data-tab="settings">Conexión</button>
+</nav>
+
+<div class="page" id="page"></div>
+
+<div class="toast" id="toast"></div>
+<div class="busy" id="busy"><div><span class="spin"></span><span id="busyMsg">Trabajando…</span></div></div>
+
+<script>
+/* ======================================================
+   Config
+   ====================================================== */
+const CFG_KEY = 'glofyProfilesAdmin.v1';
+const DEFAULT_CFG = {
+  owner: 'comms-glofy',
+  repo: 'talent-profiles',
+  branch: 'main',
+  token: '',
+  dataPath: 'profiles.json',
+  photosDir: 'photos'
+};
+const EMPTY_DATA = () => ({
+  site: { eyebrow:{en:'',es:''}, title:{en:'',es:''}, subtitle:{en:'',es:''} },
+  categories: [],
+  profiles: []
+});
+
+const A = {
+  cfg: loadCfg(),
+  data: null,
+  sha: null,
+  snapshot: '',
+  pending: new Map(),      // profile object -> JPEG dataURL waiting to be uploaded
+  removePaths: new Set(),  // repo photo paths to delete after a successful publish
+  sel: null,
+  tab: 'profiles',
+  search: '',
+  filterCat: 'all',
+  photoCache: {}
+};
+
+function loadCfg(){
+  try{ return Object.assign({}, DEFAULT_CFG, JSON.parse(localStorage.getItem(CFG_KEY) || '{}')); }
+  catch(e){ return {...DEFAULT_CFG}; }
+}
+function saveCfg(){ try{ localStorage.setItem(CFG_KEY, JSON.stringify(A.cfg)); }catch(e){} }
+
+/* ======================================================
+   Helpers
+   ====================================================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const encPath = p => p.split('/').map(encodeURIComponent).join('/');
+const slugify = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'item';
+
+function displayName(p){
+  const first = String(p.firstName || '').trim();
+  const ini = String(p.lastInitial || '').replace(/[^A-Za-zÀ-ÿÑñ]/g,'').charAt(0).toUpperCase();
+  return first ? (ini ? `${first} ${ini}.` : first) : 'Nuevo perfil';
+}
+function initials(p){
+  return (String(p.firstName||'').trim().charAt(0) + String(p.lastInitial||'').trim().charAt(0)).toUpperCase() || '+';
+}
+function uniqueId(base, list, self){
+  let id = base, n = 2;
+  while (list.some(x => x !== self && x.id === id)) id = `${base}-${n++}`;
+  return id;
+}
+function getPath(o, path){ return path.split('.').reduce((a,k) => a == null ? a : a[k], o); }
+function setPath(o, path, v){
+  const ks = path.split('.'); let cur = o;
+  ks.slice(0,-1).forEach(k => { if (cur[k] == null || typeof cur[k] !== 'object') cur[k] = {}; cur = cur[k]; });
+  cur[ks[ks.length-1]] = v;
+}
+function serialize(){
+  return JSON.stringify(A.data, (k,v) => k.startsWith('_') ? undefined : v, 2) + '\n';
+}
+function isDirty(){ return serialize() !== A.snapshot || A.pending.size > 0 || A.removePaths.size > 0; }
+
+function b64encode(str){
+  const bytes = new TextEncoder().encode(str); let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function b64decode(b64){
+  const bin = atob(String(b64).replace(/\s/g,''));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+}
+
+let toastT;
+function toast(msg, err){
+  const el = $('#toast'); el.textContent = msg; el.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastT); toastT = setTimeout(() => el.className = 'toast', err ? 7000 : 3800);
+}
+function busy(on, msg){ $('#busy').classList.toggle('show', !!on); if (msg) $('#busyMsg').textContent = msg; }
+
+/* ======================================================
+   GitHub API
+   ====================================================== */
+async function gh(path, opts = {}){
+  const {raw, ...fetchOpts} = opts;
+  const r = await fetch(`https://api.github.com/repos/${A.cfg.owner}/${A.cfg.repo}/${path}`, {
+    ...fetchOpts,
+    headers: {
+      'Authorization': `Bearer ${A.cfg.token}`,
+      'Accept': raw ? 'application/vnd.github.raw' : 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(fetchOpts.body ? {'Content-Type':'application/json'} : {})
+    },
+    cache: 'no-store'
+  });
+  if (!r.ok){
+    const e = await r.json().catch(() => ({}));
+    const err = new Error(e.message || r.statusText); err.status = r.status; throw err;
+  }
+  if (r.status === 204) return null;
+  return raw ? r.blob() : r.json();
+}
+function putFile(path, b64content, message, sha){
+  const body = { message, content: b64content, branch: A.cfg.branch };
+  if (sha) body.sha = sha;
+  return gh(`contents/${encPath(path)}`, { method:'PUT', body: JSON.stringify(body) });
+}
+async function deleteFile(path, message){
+  const meta = await gh(`contents/${encPath(path)}?ref=${encodeURIComponent(A.cfg.branch)}`);
+  return gh(`contents/${encPath(path)}`, { method:'DELETE', body: JSON.stringify({ message, sha: meta.sha, branch: A.cfg.branch }) });
+}
+function photoURL(path){
+  if (!A.photoCache[path]){
+    A.photoCache[path] = gh(`contents/${encPath(path)}?ref=${encodeURIComponent(A.cfg.branch)}`, {raw:true})
+      .then(b => URL.createObjectURL(b))
+      .catch(() => { delete A.photoCache[path]; return ''; });
+  }
+  return A.photoCache[path];
+}
+function hydratePhotos(root){
+  (root || document).querySelectorAll('img[data-gh]').forEach(img => {
+    photoURL(img.dataset.gh).then(u => { if (u) img.src = u; else img.remove(); });
+  });
+}
+
+async function connect(){
+  if (!A.cfg.token){ A.tab = 'settings'; render(); return; }
+  busy(true, 'Cargando perfiles desde GitHub…');
+  try{
+    let data, sha = null;
+    try{
+      const f = await gh(`contents/${encPath(A.cfg.dataPath)}?ref=${encodeURIComponent(A.cfg.branch)}`);
+      data = JSON.parse(b64decode(f.content)); sha = f.sha;
+    }catch(e){
+      if (e.status !== 404) throw e;
+      data = EMPTY_DATA();
+      toast(`No existe ${A.cfg.dataPath} en el repo: se creará al publicar.`);
+    }
+    data.site = data.site || EMPTY_DATA().site;
+    data.categories = data.categories || [];
+    data.profiles = data.profiles || [];
+    A.data = data; A.sha = sha; A.snapshot = serialize();
+    A.pending.clear(); A.removePaths.clear(); A.sel = null;
+    if (A.tab === 'settings') A.tab = 'profiles';
+    render();
+  }catch(e){
+    A.data = null;
+    const hint = e.status === 401 ? 'Token inválido o vencido.' :
+                 e.status === 404 ? 'No se encontró el repositorio o el token no tiene acceso.' :
+                 e.status === 403 ? 'El token no tiene permisos suficientes.' : e.message;
+    toast(`No se pudo conectar: ${hint}`, true);
+    A.tab = 'settings'; render();
+  }finally{ busy(false); }
+}
+
+/* ======================================================
+   Images
+   ====================================================== */
+function processImage(file){
+  return new Promise((resolve, reject) => {
+    if (!/^image\//.test(file.type)) return reject(new Error('El archivo no es una imagen.'));
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1100;
+      const s = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.round(img.naturalWidth * s), h = Math.round(img.naturalHeight * s);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,w,h);
+      ctx.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.86));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('No se pudo leer la imagen.')); };
+    img.src = url;
+  });
+}
+function thumbInner(p){
+  if (A.pending.has(p)) return `${esc(initials(p))}<img src="${A.pending.get(p)}" alt="">`;
+  if (p.photo) return `${esc(initials(p))}<img data-gh="${esc(p.photo)}" alt="">`;
+  return esc(initials(p));
+}
+
+/* ======================================================
+   Publish
+   ====================================================== */
+function validate(){
+  const errs = [], warns = [];
+  const catIds = A.data.categories.map(c => c.id);
+  A.data.categories.forEach((c,i) => { if (!String(c.name?.en || '').trim()) errs.push(`Categoría #${i+1}: falta el nombre en inglés.`); });
+  A.data.profiles.forEach(p => {
+    const n = displayName(p);
+    if (!String(p.firstName || '').trim()) errs.push(`Un perfil no tiene nombre.`);
+    if (!/^[A-Za-zÀ-ÿÑñ]$/.test(String(p.lastInitial || ''))) errs.push(`${n}: la inicial del apellido debe ser una sola letra.`);
+    if (!catIds.includes(p.category)) errs.push(`${n}: elegí una categoría.`);
+    if (!String(p.role?.en || '').trim()) errs.push(`${n}: falta el rol en inglés.`);
+    if (!(p.highlights?.en || []).length) errs.push(`${n}: agregá al menos un highlight en inglés.`);
+    if (!String(p.role?.es || '').trim() || !(p.highlights?.es || []).length) warns.push(n);
+  });
+  return {errs, warns};
+}
+
+async function publish(){
+  const {errs, warns} = validate();
+  if (errs.length){ toast('Revisá antes de publicar: ' + errs.slice(0,3).join(' · ') + (errs.length > 3 ? ` (+${errs.length-3})` : ''), true); return; }
+  if (warns.length && !confirm(`Estos perfiles no tienen el texto completo en español (se mostrará en inglés):\n\n${warns.join('\n')}\n\n¿Publicar igual?`)) return;
+
+  busy(true, 'Publicando…');
+  try{
+    // 1) Upload pending photos
+    const stamp = Date.now().toString(36);
+    for (const [p, dataUrl] of A.pending){
+      if (!A.data.profiles.includes(p)) continue;
+      busy(true, `Subiendo foto de ${displayName(p)}…`);
+      const path = `${A.cfg.photosDir.replace(/\/+$/,'')}/${p.id}-${stamp}.jpg`;
+      await putFile(path, dataUrl.split(',')[1], `Photo: ${displayName(p)}`);
+      if (p.photo) A.removePaths.add(p.photo);
+      p.photo = path;
+    }
+    A.pending.clear();
+
+    // 2) Commit data file
+    busy(true, 'Guardando perfiles…');
+    A.data.profiles.forEach(p => delete p._new);
+    A.data.categories.forEach(c => delete c._new);
+    const json = serialize();
+    const res = await putFile(A.cfg.dataPath, b64encode(json), `Update profiles (${new Date().toISOString().slice(0,16).replace('T',' ')})`, A.sha);
+    A.sha = res.content.sha;
+    A.snapshot = json;
+
+    // 3) Remove photos no longer used
+    const inUse = new Set(A.data.profiles.map(p => p.photo).filter(Boolean));
+    for (const path of A.removePaths){
+      if (inUse.has(path)) continue;
+      try{ await deleteFile(path, `Remove photo ${path}`); }catch(e){ console.warn('No se pudo borrar', path, e); }
+    }
+    A.removePaths.clear();
+    toast('Publicado. La landing se actualiza en aprox. 1 minuto.');
+  }catch(e){
+    const conflict = e.status === 409 || (e.status === 422 && /sha/i.test(e.message));
+    toast(conflict ? 'Alguien publicó cambios mientras editabas. Copiá tus cambios, recargá la página y volvé a intentar.' : `Error al publicar: ${e.message}`, true);
+  }finally{
+    busy(false); render();
+  }
+}
+
+/* ======================================================
+   Render
+   ====================================================== */
+const IC = {
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>'
+};
+
+function renderTop(){
+  const st = $('#status');
+  const dirty = A.data && isDirty();
+  st.className = 'status' + (A.data ? (dirty ? ' dirty' : ' ok') : '');
+  st.querySelector('span').textContent = !A.data ? 'Sin conexión' : dirty ? 'Cambios sin publicar' : `Conectado · ${A.cfg.owner}/${A.cfg.repo}`;
+  $('#publishBtn').disabled = !dirty;
+  $('#discardBtn').style.display = dirty ? '' : 'none';
+  $('#viewLink').href = `https://${A.cfg.owner}.github.io/${A.cfg.repo}/`;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === A.tab));
+}
+
+function render(){
+  renderTop();
+  if (!A.data && A.tab !== 'settings') A.tab = 'settings';
+  renderTop();
+  ({profiles:renderProfiles, categories:renderCategories, texts:renderTexts, settings:renderSettings})[A.tab]();
+}
+
+/* ---------- Profiles tab ---------- */
+function renderProfiles(){
+  $('#page').innerHTML = `
+    <div class="layout">
+      <aside class="panel side">
+        <div class="side-tools">
+          <input type="text" id="search" placeholder="Buscar…" value="${esc(A.search)}">
+          <select id="filterCat">
+            <option value="all">Todas</option>
+            ${A.data.categories.map(c => `<option value="${esc(c.id)}" ${A.filterCat === c.id ? 'selected' : ''}>${esc(c.name?.es || c.name?.en || c.id)}</option>`).join('')}
+          </select>
+        </div>
+        <button class="btn pri" id="newProfile" style="justify-content:center;margin-bottom:6px">+ Nuevo perfil</button>
+        <div class="plist" id="plist"></div>
+      </aside>
+      <section class="panel" id="editor"></section>
+    </div>`;
+  renderList(); renderEditor();
+}
+
+function renderList(){
+  const q = A.search.trim().toLowerCase();
+  const groups = A.data.categories.map(c => ({c, ps: A.data.profiles.filter(p => p.category === c.id)}));
+  const orphans = A.data.profiles.filter(p => !A.data.categories.some(c => c.id === p.category));
+  if (orphans.length) groups.push({c:{id:'__none', name:{es:'Sin categoría'}}, ps: orphans});
+  const html = groups
+    .filter(g => A.filterCat === 'all' || g.c.id === A.filterCat)
+    .map(g => {
+      const ps = g.ps.filter(p => !q || `${displayName(p)} ${p.role?.en||''} ${p.role?.es||''}`.toLowerCase().includes(q));
+      if (!ps.length) return '';
+      return `<div class="pgroup">${esc(g.c.name?.es || g.c.name?.en || g.c.id)}</div>` + ps.map((p,i) => `
+        <div class="pitem ${A.sel === p ? 'on' : ''}" data-pick="${A.data.profiles.indexOf(p)}">
+          <div class="thumb">${thumbInner(p)}</div>
+          <div class="pmeta"><b>${esc(displayName(p))}</b><span>${esc(p.role?.en || '—')}</span></div>
+          ${p.visible === false ? '<span class="badge">Oculto</span>' : ''}
+          ${A.pending.has(p) ? '<span class="badge warn">Foto</span>' : ''}
+          <div class="arrows">
+            <button class="ibtn" data-move="-1" data-idx="${A.data.profiles.indexOf(p)}" ${i === 0 ? 'disabled' : ''} title="Subir">${IC.up}</button>
+            <button class="ibtn" data-move="1" data-idx="${A.data.profiles.indexOf(p)}" ${i === ps.length - 1 ? 'disabled' : ''} title="Bajar">${IC.down}</button>
+          </div>
+        </div>`).join('');
+    }).join('');
+  $('#plist').innerHTML = html || `<div class="empty" style="padding:30px 10px">Sin resultados</div>`;
+  hydratePhotos($('#plist'));
+}
+
+function renderEditor(){
+  const p = A.sel;
+  const ed = $('#editor');
+  if (!p || !A.data.profiles.includes(p)){
+    A.sel = null;
+    ed.innerHTML = `<div class="empty"><b>Elegí un perfil para editarlo</b>o creá uno nuevo con “+ Nuevo perfil”.</div>`;
+    return;
+  }
+  const hl = lang => esc((p.highlights?.[lang] || []).join('\n'));
+  ed.innerHTML = `
+    <div class="ed-head">
+      <div class="ed-photo" id="edPhoto">${thumbInner(p)}</div>
+      <div>
+        <div class="pv-name" id="pvName">${esc(displayName(p))}</div>
+        <div class="pv-sub">Así se muestra en la landing · id: <span id="pvId">${esc(p.id)}</span></div>
+      </div>
+      <div class="sp"></div>
+      <label class="switch"><input type="checkbox" data-f="visible" ${p.visible !== false ? 'checked' : ''}> Visible</label>
+    </div>
+
+    <div class="note"><b>Regla de nombre:</b> solo nombre y la inicial del apellido, como en los CVs. El apellido completo no se carga en ningún campo.</div>
+
+    <div class="row-name">
+      <label class="f"><span>Nombre</span>
+        <input type="text" data-f="firstName" value="${esc(p.firstName)}" placeholder="Ej: Juan Cruz" autocomplete="off">
+        <div class="hint" id="nameHint">Solo el/los nombre/s de pila.</div>
+      </label>
+      <label class="f"><span>Inicial apellido</span>
+        <input type="text" data-f="lastInitial" value="${esc(p.lastInitial)}" maxlength="1" placeholder="D" autocomplete="off" style="text-transform:uppercase;text-align:center;font-weight:800">
+      </label>
+    </div>
+
+    <label class="f"><span>Categoría</span>
+      <select data-f="category">
+        ${A.data.categories.map(c => `<option value="${esc(c.id)}" ${p.category === c.id ? 'selected' : ''}>${esc(c.name?.en || c.id)}${c.name?.es && c.name.es !== c.name.en ? ' / ' + esc(c.name.es) : ''}</option>`).join('')}
+        ${!A.data.categories.length ? '<option value="">Primero creá una categoría</option>' : ''}
+      </select>
+    </label>
+
+    <div class="row2">
+      <div>
+        <div class="lang-h"><b>EN</b> English · se muestra por defecto</div>
+        <label class="f"><span>Role / title</span><input type="text" data-f="role.en" value="${esc(p.role?.en)}" placeholder="Senior SDR, Full-Cycle Sales"></label>
+        <label class="f"><span>Highlights <em>uno por línea</em></span><textarea data-f="highlights.en" rows="10">${hl('en')}</textarea></label>
+      </div>
+      <div>
+        <div class="lang-h"><b>ES</b> Español</div>
+        <label class="f"><span>Rol / título</span><input type="text" data-f="role.es" value="${esc(p.role?.es)}" placeholder="SDR Senior, Ventas de Ciclo Completo"></label>
+        <label class="f"><span>Highlights <em>uno por línea</em></span><textarea data-f="highlights.es" rows="10">${hl('es')}</textarea></label>
+      </div>
+    </div>
+
+    <label class="f"><span>Foto</span></label>
+    <label class="drop" id="drop">
+      <input type="file" accept="image/*" id="photoInput">
+      ${IC.upload}
+      <div><b>${p.photo || A.pending.has(p) ? 'Reemplazar foto' : 'Subir foto'}</b><span>Arrastrá una imagen o hacé clic. Se optimiza automáticamente y se guarda en GitHub al publicar. Ideal: vertical, cara centrada en el tercio superior.</span></div>
+    </label>
+
+    <div class="ed-foot">
+      ${p.photo || A.pending.has(p) ? '<button class="btn sm" id="removePhoto">Quitar foto</button>' : ''}
+      <div class="sp"></div>
+      <button class="btn danger sm" id="deleteProfile">${IC.del.replace('<svg','<svg width="14" height="14"')} Eliminar perfil</button>
+    </div>`;
+  hydratePhotos(ed);
+  checkNameHint();
+}
+
+function checkNameHint(){
+  const h = $('#nameHint'); if (!h || !A.sel) return;
+  const words = String(A.sel.firstName || '').trim().split(/\s+/).filter(Boolean);
+  if (words.length > 2){ h.className = 'hint warn'; h.textContent = '¿Incluiste el apellido? Cargá solo el nombre; el apellido va únicamente como inicial.'; }
+  else { h.className = 'hint'; h.textContent = 'Solo el/los nombre/s de pila.'; }
+}
+
+function refreshProfileId(p){
+  if (!p._new) return;
+  const base = slugify(`${p.firstName || 'perfil'} ${p.lastInitial || ''}`);
+  p.id = uniqueId(base, A.data.profiles, p);
+  const el = $('#pvId'); if (el) el.textContent = p.id;
+}
+
+/* ---------- Categories tab ---------- */
+function renderCategories(){
+  const cs = A.data.categories;
+  $('#page').innerHTML = `
+    <div class="panel maxw">
+      <div class="note">Las categorías ordenan los perfiles en la landing (chips de filtro y secciones de “Browse”). El orden de esta lista es el orden en la landing. Solo se pueden eliminar categorías sin perfiles.</div>
+      <table>
+        <thead><tr><th>English</th><th>Español</th><th>ID</th><th></th><th></th></tr></thead>
+        <tbody>
+          ${cs.map((c,i) => {
+            const n = A.data.profiles.filter(p => p.category === c.id).length;
+            return `<tr>
+              <td><input type="text" data-cf="name.en" data-ci="${i}" value="${esc(c.name?.en)}" placeholder="Category"></td>
+              <td><input type="text" data-cf="name.es" data-ci="${i}" value="${esc(c.name?.es)}" placeholder="Categoría"></td>
+              <td class="id" id="cid-${i}">${esc(c.id)}</td>
+              <td class="n">${n} perfil${n === 1 ? '' : 'es'}</td>
+              <td style="white-space:nowrap">
+                <button class="ibtn" data-cmove="-1" data-ci="${i}" ${i === 0 ? 'disabled' : ''} title="Subir">${IC.up}</button>
+                <button class="ibtn" data-cmove="1" data-ci="${i}" ${i === cs.length - 1 ? 'disabled' : ''} title="Bajar">${IC.down}</button>
+                <button class="ibtn" data-cdel="${i}" ${n ? 'disabled' : ''} title="${n ? 'Tiene perfiles asignados' : 'Eliminar'}">${IC.del}</button>
+              </td></tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      ${!cs.length ? '<div class="empty" style="padding:30px">Todavía no hay categorías.</div>' : ''}
+      <div style="margin-top:16px"><button class="btn" id="newCat">+ Nueva categoría</button></div>
+    </div>`;
+}
+
+/* ---------- Texts tab ---------- */
+function renderTexts(){
+  const s = A.data.site;
+  const row = (key, label, area) => `
+    <div class="row2">
+      <label class="f"><span>${label} · EN</span>${area
+        ? `<textarea data-sf="${key}.en" rows="3">${esc(s[key]?.en)}</textarea>`
+        : `<input type="text" data-sf="${key}.en" value="${esc(s[key]?.en)}">`}</label>
+      <label class="f"><span>${label} · ES</span>${area
+        ? `<textarea data-sf="${key}.es" rows="3">${esc(s[key]?.es)}</textarea>`
+        : `<input type="text" data-sf="${key}.es" value="${esc(s[key]?.es)}">`}</label>
+    </div>`;
+  $('#page').innerHTML = `
+    <div class="panel maxw">
+      <div class="note">Encabezado de la landing, arriba de los filtros por categoría.</div>
+      ${row('eyebrow','Eyebrow')}
+      ${row('title','Título')}
+      ${row('subtitle','Bajada', true)}
+    </div>`;
+}
+
+/* ---------- Settings tab ---------- */
+function renderSettings(){
+  const c = A.cfg;
+  $('#page').innerHTML = `
+    <div class="panel maxw">
+      <div class="note">
+        Para editar se necesita un <b>token de GitHub</b> con permiso de escritura sobre el repositorio.<br>
+        Crealo en GitHub → Settings → Developer settings → <b>Fine-grained tokens</b> → Repository access: solo este repo → Permissions: <b>Contents: Read and write</b>.<br>
+        El token se guarda únicamente en este navegador. No lo compartas por Slack ni mail.
+      </div>
+      <div class="row2">
+        <label class="f"><span>Owner / organización</span><input type="text" id="c_owner" value="${esc(c.owner)}"></label>
+        <label class="f"><span>Repositorio</span><input type="text" id="c_repo" value="${esc(c.repo)}"></label>
+      </div>
+      <div class="row2">
+        <label class="f"><span>Branch</span><input type="text" id="c_branch" value="${esc(c.branch)}"></label>
+        <label class="f"><span>Token</span><input type="password" id="c_token" value="${esc(c.token)}" placeholder="github_pat_…" autocomplete="off"></label>
+      </div>
+      <div class="row2">
+        <label class="f"><span>Archivo de datos</span><input type="text" id="c_dataPath" value="${esc(c.dataPath)}"></label>
+        <label class="f"><span>Carpeta de fotos</span><input type="text" id="c_photosDir" value="${esc(c.photosDir)}"></label>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button class="btn pri" id="saveCfg">Guardar y conectar</button>
+        ${c.token ? '<button class="btn" id="forgetToken">Olvidar token en este navegador</button>' : ''}
+      </div>
+    </div>`;
+}
+
+/* ======================================================
+   Events
+   ====================================================== */
+document.addEventListener('click', async e => {
+  const t = e.target.closest('button, .pitem'); if (!t) return;
+
+  if (t.dataset.tab){
+    if (!A.data && t.dataset.tab !== 'settings'){ toast('Primero conectá el repositorio.'); return; }
+    A.tab = t.dataset.tab; render(); return;
+  }
+  if (t.id === 'publishBtn'){ publish(); return; }
+  if (t.id === 'discardBtn'){
+    if (!confirm('¿Descartar todos los cambios sin publicar?')) return;
+    A.data = JSON.parse(A.snapshot); A.pending.clear(); A.removePaths.clear(); A.sel = null; render(); return;
+  }
+  if (t.id === 'saveCfg'){
+    ['owner','repo','branch','token','dataPath','photosDir'].forEach(k => A.cfg[k] = $('#c_' + k).value.trim());
+    saveCfg(); A.photoCache = {};
+    if (A.data && isDirty() && !confirm('Hay cambios sin publicar que se van a perder al reconectar. ¿Continuar?')) return;
+    connect(); return;
+  }
+  if (t.id === 'forgetToken'){ A.cfg.token = ''; saveCfg(); A.data = null; render(); toast('Token eliminado de este navegador.'); return; }
+
+  // Profiles
+  if (t.id === 'newProfile'){
+    if (!A.data.categories.length){ toast('Primero creá al menos una categoría.', true); A.tab = 'categories'; render(); return; }
+    const p = { id:'', firstName:'', lastInitial:'', category: A.filterCat !== 'all' ? A.filterCat : A.data.categories[0].id,
+      visible:true, photo:'', role:{en:'',es:''}, highlights:{en:[],es:[]}, _new:true };
+    refreshProfileId(p);
+    A.data.profiles.push(p); A.sel = p; A.search = '';
+    renderProfiles(); renderTop();
+    setTimeout(() => document.querySelector('[data-f="firstName"]')?.focus(), 30);
+    return;
+  }
+  if (t.dataset.move){
+    e.stopPropagation();
+    const arr = A.data.profiles, i = +t.dataset.idx, p = arr[i], d = +t.dataset.move;
+    let j = i + d;
+    while (j >= 0 && j < arr.length && arr[j].category !== p.category) j += d;
+    if (j < 0 || j >= arr.length) return;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    renderList(); renderTop(); return;
+  }
+  if (t.classList.contains('pitem')){
+    A.sel = A.data.profiles[+t.dataset.pick]; renderList(); renderEditor(); return;
+  }
+  if (t.id === 'removePhoto' && A.sel){
+    A.pending.delete(A.sel);
+    if (A.sel.photo){ A.removePaths.add(A.sel.photo); A.sel.photo = ''; }
+    renderList(); renderEditor(); renderTop(); return;
+  }
+  if (t.id === 'deleteProfile' && A.sel){
+    if (!confirm(`¿Eliminar a ${displayName(A.sel)}? El cambio se aplica en la landing al publicar.`)) return;
+    const p = A.sel;
+    A.pending.delete(p);
+    if (p.photo) A.removePaths.add(p.photo);
+    A.data.profiles.splice(A.data.profiles.indexOf(p), 1);
+    A.sel = null; renderList(); renderEditor(); renderTop(); return;
+  }
+
+  // Categories
+  if (t.id === 'newCat'){
+    const c = { id: uniqueId('nueva-categoria', A.data.categories), name:{en:'',es:''}, _new:true };
+    A.data.categories.push(c); renderCategories(); renderTop();
+    setTimeout(() => { const ins = document.querySelectorAll('[data-cf="name.en"]'); ins[ins.length-1]?.focus(); }, 30);
+    return;
+  }
+  if (t.dataset.cmove){
+    const arr = A.data.categories, i = +t.dataset.ci, j = i + (+t.dataset.cmove);
+    if (j < 0 || j >= arr.length) return;
+    [arr[i], arr[j]] = [arr[j], arr[i]]; renderCategories(); renderTop(); return;
+  }
+  if (t.dataset.cdel){
+    const i = +t.dataset.cdel, c = A.data.categories[i];
+    if (A.data.profiles.some(p => p.category === c.id)) return;
+    A.data.categories.splice(i, 1); renderCategories(); renderTop(); return;
+  }
+});
+
+document.addEventListener('input', e => {
+  const el = e.target;
+
+  if (el.id === 'search'){ A.search = el.value; renderList(); return; }
+
+  if (el.dataset.f && A.sel){
+    const p = A.sel, f = el.dataset.f;
+    if (f === 'visible') p.visible = el.checked;
+    else if (f === 'lastInitial'){
+      const v = el.value.replace(/[^A-Za-zÀ-ÿÑñ]/g,'').charAt(0).toUpperCase();
+      el.value = v; p.lastInitial = v;
+    }
+    else if (f.startsWith('highlights.')) setPath(p, f, el.value.split('\n').map(s => s.trim()).filter(Boolean));
+    else setPath(p, f, f === 'firstName' ? el.value.replace(/\s{2,}/g,' ') : el.value);
+
+    if (f === 'firstName' || f === 'lastInitial'){
+      refreshProfileId(p);
+      $('#pvName').textContent = displayName(p);
+      checkNameHint();
+      const ph = $('#edPhoto'); if (ph && !p.photo && !A.pending.has(p)) ph.textContent = initials(p);
+    }
+    renderList(); renderTop(); return;
+  }
+
+  if (el.dataset.cf){
+    const c = A.data.categories[+el.dataset.ci];
+    setPath(c, el.dataset.cf, el.value);
+    if (c._new && el.dataset.cf === 'name.en'){
+      c.id = uniqueId(slugify(el.value || 'nueva-categoria'), A.data.categories, c);
+      const idCell = $('#cid-' + el.dataset.ci); if (idCell) idCell.textContent = c.id;
+    }
+    renderTop(); return;
+  }
+
+  if (el.dataset.sf){ setPath(A.data.site, el.dataset.sf, el.value); renderTop(); return; }
+});
+
+document.addEventListener('change', async e => {
+  const el = e.target;
+  if (el.id === 'filterCat'){ A.filterCat = el.value; renderList(); return; }
+  if (el.dataset.f === 'category' && A.sel){ A.sel.category = el.value; renderList(); renderTop(); return; }
+  if (el.id === 'photoInput' && el.files[0]) handlePhoto(el.files[0]);
+});
+
+async function handlePhoto(file){
+  if (!A.sel) return;
+  try{
+    const dataUrl = await processImage(file);
+    A.pending.set(A.sel, dataUrl);
+    renderList(); renderEditor(); renderTop();
+    toast('Foto lista. Se sube a GitHub al publicar.');
+  }catch(err){ toast(err.message, true); }
+}
+
+['dragover','dragenter'].forEach(ev => document.addEventListener(ev, e => {
+  const d = e.target.closest?.('#drop'); if (!d) return; e.preventDefault(); d.classList.add('over');
+}));
+['dragleave','drop'].forEach(ev => document.addEventListener(ev, e => {
+  const d = e.target.closest?.('#drop'); if (!d) return; e.preventDefault(); d.classList.remove('over');
+  if (ev === 'drop' && e.dataTransfer.files[0]) handlePhoto(e.dataTransfer.files[0]);
+}));
+
+window.addEventListener('beforeunload', e => { if (A.data && isDirty()){ e.preventDefault(); e.returnValue = ''; } });
+
+/* Init */
+render();
+if (A.cfg.token) connect();
+</script>
+</body>
+</html>
