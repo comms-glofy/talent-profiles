@@ -117,6 +117,9 @@ td.n{color:var(--mut);font-size:12px;white-space:nowrap}
 .note{background:rgba(206,255,0,.06);border:1px solid rgba(206,255,0,.25);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.55;margin-bottom:16px}
 .note b{color:var(--lime)}
 .maxw{max-width:760px}
+.login{max-width:420px;margin:56px auto 0;padding:28px}
+.login h2{font-size:22px;font-weight:800;margin-bottom:6px}
+.login .hint{margin:0 0 20px}
 
 @media (max-width:900px){
   .layout{grid-template-columns:1fr}
@@ -135,17 +138,17 @@ td.n{color:var(--mut);font-size:12px;white-space:nowrap}
   <img class="logo" src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png" alt="Glofy">
   <span class="ttl">Profiles Admin</span>
   <div class="sp"></div>
-  <span class="status" id="status"><i></i><span>Sin conexión</span></span>
+  <span class="status" id="status"><i></i><span></span></span>
   <a class="btn" id="viewLink" href="./" target="_blank" rel="noopener">Ver landing ↗</a>
   <button class="btn" id="discardBtn" style="display:none">Descartar</button>
   <button class="btn pri" id="publishBtn" disabled>Publicar cambios</button>
+  <button class="btn sm" id="logoutBtn" style="display:none">Salir</button>
 </header>
 
 <nav class="tabs" id="tabs">
   <button class="tab on" data-tab="profiles">Perfiles</button>
   <button class="tab" data-tab="categories">Categorías</button>
   <button class="tab" data-tab="texts">Textos de la landing</button>
-  <button class="tab" data-tab="settings">Conexión</button>
 </nav>
 
 <div class="page" id="page"></div>
@@ -155,17 +158,12 @@ td.n{color:var(--mut);font-size:12px;white-space:nowrap}
 
 <script>
 /* ======================================================
-   Config
+   Config — lo único a completar: la URL del Worker de Cloudflare
    ====================================================== */
-const CFG_KEY = 'glofyProfilesAdmin.v1';
-const DEFAULT_CFG = {
-  owner: 'comms-glofy',
-  repo: 'talent-profiles',
-  branch: 'main',
-  token: '',
-  dataPath: 'profiles.json',
-  photosDir: 'photos'
-};
+const API_URL = 'https://talent-profiles-api.comms-db2.workers.dev';
+const LANDING_URL = './';
+const SESSION_KEY = 'glofyProfilesAdmin.session';
+
 const EMPTY_DATA = () => ({
   site: { eyebrow:{en:'',es:''}, title:{en:'',es:''}, subtitle:{en:'',es:''} },
   categories: [],
@@ -173,12 +171,12 @@ const EMPTY_DATA = () => ({
 });
 
 const A = {
-  cfg: loadCfg(),
+  session: loadSession(),  // {name, key}
   data: null,
   sha: null,
   snapshot: '',
   pending: new Map(),      // profile object -> JPEG dataURL waiting to be uploaded
-  removePaths: new Set(),  // repo photo paths to delete after a successful publish
+  removePaths: new Set(),  // repo photo paths to delete on the next publish
   sel: null,
   tab: 'profiles',
   search: '',
@@ -186,11 +184,8 @@ const A = {
   photoCache: {}
 };
 
-function loadCfg(){
-  try{ return Object.assign({}, DEFAULT_CFG, JSON.parse(localStorage.getItem(CFG_KEY) || '{}')); }
-  catch(e){ return {...DEFAULT_CFG}; }
-}
-function saveCfg(){ try{ localStorage.setItem(CFG_KEY, JSON.stringify(A.cfg)); }catch(e){} }
+function loadSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); }catch(e){ return null; } }
+function saveSession(v){ try{ v ? localStorage.setItem(SESSION_KEY, JSON.stringify(v)) : localStorage.removeItem(SESSION_KEY); }catch(e){} }
 
 /* ======================================================
    Helpers
@@ -242,39 +237,29 @@ function toast(msg, err){
 function busy(on, msg){ $('#busy').classList.toggle('show', !!on); if (msg) $('#busyMsg').textContent = msg; }
 
 /* ======================================================
-   GitHub API
+   API (Worker) — el token de GitHub vive solo en el Worker
    ====================================================== */
-async function gh(path, opts = {}){
-  const {raw, ...fetchOpts} = opts;
-  const r = await fetch(`https://api.github.com/repos/${A.cfg.owner}/${A.cfg.repo}/${path}`, {
-    ...fetchOpts,
-    headers: {
-      'Authorization': `Bearer ${A.cfg.token}`,
-      'Accept': raw ? 'application/vnd.github.raw' : 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      ...(fetchOpts.body ? {'Content-Type':'application/json'} : {})
-    },
-    cache: 'no-store'
-  });
+async function api(path, opts = {}){
+  const {blob, ...rest} = opts;
+  let r;
+  try{
+    r = await fetch(API_URL.replace(/\/+$/,'') + path, {
+      ...rest,
+      headers: { 'X-Admin-Key': (A.session && A.session.key) || '', ...(rest.body ? {'Content-Type':'application/json'} : {}) },
+      cache: 'no-store'
+    });
+  }catch(e){
+    const err = new Error('No se pudo conectar con el servicio. Revisá tu conexión e intentá de nuevo.'); err.status = 0; throw err;
+  }
   if (!r.ok){
     const e = await r.json().catch(() => ({}));
-    const err = new Error(e.message || r.statusText); err.status = r.status; throw err;
+    const err = new Error(e.error || r.statusText); err.status = r.status; throw err;
   }
-  if (r.status === 204) return null;
-  return raw ? r.blob() : r.json();
-}
-function putFile(path, b64content, message, sha){
-  const body = { message, content: b64content, branch: A.cfg.branch };
-  if (sha) body.sha = sha;
-  return gh(`contents/${encPath(path)}`, { method:'PUT', body: JSON.stringify(body) });
-}
-async function deleteFile(path, message){
-  const meta = await gh(`contents/${encPath(path)}?ref=${encodeURIComponent(A.cfg.branch)}`);
-  return gh(`contents/${encPath(path)}`, { method:'DELETE', body: JSON.stringify({ message, sha: meta.sha, branch: A.cfg.branch }) });
+  return blob ? r.blob() : r.json();
 }
 function photoURL(path){
   if (!A.photoCache[path]){
-    A.photoCache[path] = gh(`contents/${encPath(path)}?ref=${encodeURIComponent(A.cfg.branch)}`, {raw:true})
+    A.photoCache[path] = api('/photo?path=' + encodeURIComponent(path), {blob:true})
       .then(b => URL.createObjectURL(b))
       .catch(() => { delete A.photoCache[path]; return ''; });
   }
@@ -285,34 +270,45 @@ function hydratePhotos(root){
     photoURL(img.dataset.gh).then(u => { if (u) img.src = u; else img.remove(); });
   });
 }
+function sessionExpired(){
+  A.session = null; saveSession(null); A.data = null;
+  toast('La clave de acceso cambió. Ingresá de nuevo.', true);
+  render();
+}
+
+async function login(name, key){
+  A.session = {name, key};
+  busy(true, 'Ingresando…');
+  try{
+    await api('/login');
+    saveSession(A.session);
+  }catch(e){
+    A.session = null; busy(false);
+    toast(e.status === 401 ? 'Clave incorrecta.' : e.message, true);
+    renderTop();
+    const k = $('#l_key'); if (k){ k.value = ''; k.focus(); }
+    return;
+  }
+  busy(false);
+  connect();
+}
 
 async function connect(){
-  if (!A.cfg.token){ A.tab = 'settings'; render(); return; }
-  busy(true, 'Cargando perfiles desde GitHub…');
+  if (!A.session){ render(); return; }
+  busy(true, 'Cargando perfiles…');
   try{
-    let data, sha = null;
-    try{
-      const f = await gh(`contents/${encPath(A.cfg.dataPath)}?ref=${encodeURIComponent(A.cfg.branch)}`);
-      data = JSON.parse(b64decode(f.content)); sha = f.sha;
-    }catch(e){
-      if (e.status !== 404) throw e;
-      data = EMPTY_DATA();
-      toast(`No existe ${A.cfg.dataPath} en el repo: se creará al publicar.`);
-    }
+    const res = await api('/data');
+    const data = res.data || EMPTY_DATA();
     data.site = data.site || EMPTY_DATA().site;
     data.categories = data.categories || [];
     data.profiles = data.profiles || [];
-    A.data = data; A.sha = sha; A.snapshot = serialize();
+    A.data = data; A.sha = res.sha || null; A.snapshot = serialize();
     A.pending.clear(); A.removePaths.clear(); A.sel = null;
-    if (A.tab === 'settings') A.tab = 'profiles';
     render();
   }catch(e){
     A.data = null;
-    const hint = e.status === 401 ? 'Token inválido o vencido.' :
-                 e.status === 404 ? 'No se encontró el repositorio o el token no tiene acceso.' :
-                 e.status === 403 ? 'El token no tiene permisos suficientes.' : e.message;
-    toast(`No se pudo conectar: ${hint}`, true);
-    A.tab = 'settings'; render();
+    if (e.status === 401){ busy(false); sessionExpired(); return; }
+    toast(e.message, true); render();
   }finally{ busy(false); }
 }
 
@@ -369,42 +365,33 @@ async function publish(){
   if (errs.length){ toast('Revisá antes de publicar: ' + errs.slice(0,3).join(' · ') + (errs.length > 3 ? ` (+${errs.length-3})` : ''), true); return; }
   if (warns.length && !confirm(`Estos perfiles no tienen el texto completo en español (se mostrará en inglés):\n\n${warns.join('\n')}\n\n¿Publicar igual?`)) return;
 
-  busy(true, 'Publicando…');
+  busy(true, A.pending.size ? 'Subiendo fotos y publicando…' : 'Publicando…');
+  const selId = A.sel && A.sel.id;
   try{
-    // 1) Upload pending photos
-    const stamp = Date.now().toString(36);
-    for (const [p, dataUrl] of A.pending){
-      if (!A.data.profiles.includes(p)) continue;
-      busy(true, `Subiendo foto de ${displayName(p)}…`);
-      const path = `${A.cfg.photosDir.replace(/\/+$/,'')}/${p.id}-${stamp}.jpg`;
-      await putFile(path, dataUrl.split(',')[1], `Photo: ${displayName(p)}`);
-      if (p.photo) A.removePaths.add(p.photo);
-      p.photo = path;
-    }
-    A.pending.clear();
-
-    // 2) Commit data file
-    busy(true, 'Guardando perfiles…');
     A.data.profiles.forEach(p => delete p._new);
     A.data.categories.forEach(c => delete c._new);
-    const json = serialize();
-    const res = await putFile(A.cfg.dataPath, b64encode(json), `Update profiles (${new Date().toISOString().slice(0,16).replace('T',' ')})`, A.sha);
-    A.sha = res.content.sha;
-    A.snapshot = json;
-
-    // 3) Remove photos no longer used
-    const inUse = new Set(A.data.profiles.map(p => p.photo).filter(Boolean));
-    for (const path of A.removePaths){
-      if (inUse.has(path)) continue;
-      try{ await deleteFile(path, `Remove photo ${path}`); }catch(e){ console.warn('No se pudo borrar', path, e); }
-    }
-    A.removePaths.clear();
-    toast('Publicado. La landing se actualiza en aprox. 1 minuto.');
+    const photos = [...A.pending]
+      .filter(([p]) => A.data.profiles.includes(p))
+      .map(([p, dataUrl]) => ({ id: p.id, b64: dataUrl.split(',')[1] }));
+    const res = await api('/publish', {
+      method: 'POST',
+      body: JSON.stringify({
+        data: JSON.parse(serialize()),
+        sha: A.sha,
+        photos,
+        remove: [...A.removePaths],
+        author: A.session.name
+      })
+    });
+    A.data = res.data; A.sha = res.sha; A.snapshot = serialize();
+    A.pending.clear(); A.removePaths.clear();
+    A.sel = selId ? (A.data.profiles.find(p => p.id === selId) || null) : null;
+    toast('Publicado. La landing se actualiza para todos en aprox. 1 minuto.');
   }catch(e){
-    const conflict = e.status === 409 || (e.status === 422 && /sha/i.test(e.message));
-    toast(conflict ? 'Alguien publicó cambios mientras editabas. Copiá tus cambios, recargá la página y volvé a intentar.' : `Error al publicar: ${e.message}`, true);
+    if (e.status === 401){ busy(false); sessionExpired(); return; }
+    toast(e.status === 409 ? e.message : `Error al publicar: ${e.message}`, true);
   }finally{
-    busy(false); render();
+    busy(false); if (A.data) render();
   }
 }
 
@@ -422,18 +409,21 @@ function renderTop(){
   const st = $('#status');
   const dirty = A.data && isDirty();
   st.className = 'status' + (A.data ? (dirty ? ' dirty' : ' ok') : '');
-  st.querySelector('span').textContent = !A.data ? 'Sin conexión' : dirty ? 'Cambios sin publicar' : `Conectado · ${A.cfg.owner}/${A.cfg.repo}`;
+  st.style.display = A.data ? '' : 'none';
+  st.querySelector('span').textContent = dirty ? 'Cambios sin publicar' : `Todo publicado · ${A.session ? A.session.name : ''}`;
+  $('#publishBtn').style.display = A.data ? '' : 'none';
   $('#publishBtn').disabled = !dirty;
   $('#discardBtn').style.display = dirty ? '' : 'none';
-  $('#viewLink').href = `https://${A.cfg.owner}.github.io/${A.cfg.repo}/`;
+  $('#logoutBtn').style.display = A.session ? '' : 'none';
+  $('#viewLink').href = LANDING_URL;
+  $('#tabs').style.display = A.data ? '' : 'none';
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === A.tab));
 }
 
 function render(){
   renderTop();
-  if (!A.data && A.tab !== 'settings') A.tab = 'settings';
-  renderTop();
-  ({profiles:renderProfiles, categories:renderCategories, texts:renderTexts, settings:renderSettings})[A.tab]();
+  if (!A.data){ renderLogin(); return; }
+  ({profiles:renderProfiles, categories:renderCategories, texts:renderTexts})[A.tab]();
 }
 
 /* ---------- Profiles tab ---------- */
@@ -614,33 +604,18 @@ function renderTexts(){
     </div>`;
 }
 
-/* ---------- Settings tab ---------- */
-function renderSettings(){
-  const c = A.cfg;
+/* ---------- Login ---------- */
+function renderLogin(){
+  const notConfigured = /REEMPLAZAR/.test(API_URL);
   $('#page').innerHTML = `
-    <div class="panel maxw">
-      <div class="note">
-        Para editar se necesita un <b>token de GitHub</b> con permiso de escritura sobre el repositorio.<br>
-        Crealo en GitHub → Settings → Developer settings → <b>Fine-grained tokens</b> → Repository access: solo este repo → Permissions: <b>Contents: Read and write</b>.<br>
-        El token se guarda únicamente en este navegador. No lo compartas por Slack ni mail.
-      </div>
-      <div class="row2">
-        <label class="f"><span>Owner / organización</span><input type="text" id="c_owner" value="${esc(c.owner)}"></label>
-        <label class="f"><span>Repositorio</span><input type="text" id="c_repo" value="${esc(c.repo)}"></label>
-      </div>
-      <div class="row2">
-        <label class="f"><span>Branch</span><input type="text" id="c_branch" value="${esc(c.branch)}"></label>
-        <label class="f"><span>Token</span><input type="password" id="c_token" value="${esc(c.token)}" placeholder="github_pat_…" autocomplete="off"></label>
-      </div>
-      <div class="row2">
-        <label class="f"><span>Archivo de datos</span><input type="text" id="c_dataPath" value="${esc(c.dataPath)}"></label>
-        <label class="f"><span>Carpeta de fotos</span><input type="text" id="c_photosDir" value="${esc(c.photosDir)}"></label>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:6px">
-        <button class="btn pri" id="saveCfg">Guardar y conectar</button>
-        ${c.token ? '<button class="btn" id="forgetToken">Olvidar token en este navegador</button>' : ''}
-      </div>
-    </div>`;
+    <form class="panel login" id="loginForm" autocomplete="on">
+      <h2>Admin de perfiles</h2>
+      <p class="hint">Ingresá con tu nombre y la clave de acceso del equipo. Tu nombre queda registrado en cada publicación.</p>
+      ${notConfigured ? '<div class="note"><b>Falta configurar el servicio.</b> Completá API_URL al inicio del script de admin.html con la URL del Worker.</div>' : ''}
+      <label class="f"><span>Tu nombre</span><input type="text" id="l_name" value="${esc(A.session ? A.session.name : '')}" autocomplete="name" placeholder="Ej: Sofía (Comercial)"></label>
+      <label class="f"><span>Clave de acceso</span><input type="password" id="l_key" autocomplete="current-password"></label>
+      <button class="btn pri" type="submit" style="width:100%;justify-content:center;margin-top:4px">Ingresar</button>
+    </form>`;
 }
 
 /* ======================================================
@@ -649,22 +624,16 @@ function renderSettings(){
 document.addEventListener('click', async e => {
   const t = e.target.closest('button, .pitem'); if (!t) return;
 
-  if (t.dataset.tab){
-    if (!A.data && t.dataset.tab !== 'settings'){ toast('Primero conectá el repositorio.'); return; }
-    A.tab = t.dataset.tab; render(); return;
-  }
+  if (t.dataset.tab){ A.tab = t.dataset.tab; render(); return; }
   if (t.id === 'publishBtn'){ publish(); return; }
   if (t.id === 'discardBtn'){
     if (!confirm('¿Descartar todos los cambios sin publicar?')) return;
     A.data = JSON.parse(A.snapshot); A.pending.clear(); A.removePaths.clear(); A.sel = null; render(); return;
   }
-  if (t.id === 'saveCfg'){
-    ['owner','repo','branch','token','dataPath','photosDir'].forEach(k => A.cfg[k] = $('#c_' + k).value.trim());
-    saveCfg(); A.photoCache = {};
-    if (A.data && isDirty() && !confirm('Hay cambios sin publicar que se van a perder al reconectar. ¿Continuar?')) return;
-    connect(); return;
+  if (t.id === 'logoutBtn'){
+    if (A.data && isDirty() && !confirm('Hay cambios sin publicar que se van a perder. ¿Salir igual?')) return;
+    A.session = null; saveSession(null); A.data = null; A.photoCache = {}; A.sel = null; render(); return;
   }
-  if (t.id === 'forgetToken'){ A.cfg.token = ''; saveCfg(); A.data = null; render(); toast('Token eliminado de este navegador.'); return; }
 
   // Profiles
   if (t.id === 'newProfile'){
@@ -674,7 +643,7 @@ document.addEventListener('click', async e => {
     refreshProfileId(p);
     A.data.profiles.push(p); A.sel = p; A.search = '';
     renderProfiles(); renderTop();
-    setTimeout(() => document.querySelector('[data-f="firstName"]')?.focus(), 30);
+    setTimeout(() => { if (document.activeElement === document.body || document.activeElement?.id === 'newProfile') document.querySelector('[data-f="firstName"]')?.focus(); }, 30);
     return;
   }
   if (t.dataset.move){
@@ -786,9 +755,18 @@ async function handlePhoto(file){
 
 window.addEventListener('beforeunload', e => { if (A.data && isDirty()){ e.preventDefault(); e.returnValue = ''; } });
 
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'loginForm') return;
+  e.preventDefault();
+  const name = $('#l_name').value.trim(), key = $('#l_key').value;
+  if (!name){ toast('Ingresá tu nombre.', true); return; }
+  if (!key){ toast('Ingresá la clave de acceso.', true); return; }
+  login(name, key);
+});
+
 /* Init */
 render();
-if (A.cfg.token) connect();
+if (A.session) connect();
 </script>
 </body>
 </html>
