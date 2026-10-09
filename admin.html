@@ -95,6 +95,10 @@ textarea{resize:vertical;line-height:1.5;min-height:80px}
 .drop svg{width:26px;height:26px;color:var(--lime);flex:none}
 .drop b{display:block}
 .drop span{font-size:12px;color:var(--mut)}
+.vprev{display:flex;align-items:center;gap:12px;margin-top:10px}
+.vprev img{width:128px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#000;display:block}
+.vprev a{font-size:12px;font-weight:700;color:var(--lime);text-decoration:none}
+.hint.ok{color:var(--lime)}
 .ed-foot{display:flex;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
 
 .empty{padding:70px 20px;text-align:center;color:var(--mut)}
@@ -148,7 +152,7 @@ td.n{color:var(--mut);font-size:12px;white-space:nowrap}
 <nav class="tabs" id="tabs">
   <button class="tab on" data-tab="profiles">Perfiles</button>
   <button class="tab" data-tab="categories">Categorías</button>
-  <button class="tab" data-tab="texts">Textos de la landing</button>
+  <button class="tab" data-tab="texts">Título de la landing</button>
 </nav>
 
 <div class="page" id="page"></div>
@@ -202,6 +206,23 @@ function displayName(p){
 }
 function initials(p){
   return (String(p.firstName||'').trim().charAt(0) + String(p.lastInitial||'').trim().charAt(0)).toUpperCase() || '+';
+}
+function parseYouTube(url){
+  const ok = s => /^[\w-]{11}$/.test(s || '') ? s : '';
+  if (!url) return null;
+  let id = '', start = 0;
+  try{
+    const u = new URL(String(url).trim());
+    const host = u.hostname.replace(/^(www|m|music)\./,'');
+    if (host === 'youtu.be') id = ok(u.pathname.split('/')[1]);
+    else if (/(^|\.)youtube(-nocookie)?\.com$/.test(host)){
+      id = ok(u.searchParams.get('v')) || ok((u.pathname.match(/^\/(?:embed|shorts|live|v)\/([\w-]{11})/) || [])[1]);
+    }
+    const tm = u.searchParams.get('t') || u.searchParams.get('start') || '';
+    const m = String(tm).match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+    if (m) start = (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0);
+  }catch(e){ id = ok(String(url).trim()); }
+  return id ? {id, start} : null;
 }
 function uniqueId(base, list, self){
   let id = base, n = 2;
@@ -355,6 +376,7 @@ function validate(){
     if (!catIds.includes(p.category)) errs.push(`${n}: elegí una categoría.`);
     if (!String(p.role?.en || '').trim()) errs.push(`${n}: falta el rol en inglés.`);
     if (!(p.highlights?.en || []).length) errs.push(`${n}: agregá al menos un highlight en inglés.`);
+    if (String(p.video || '').trim() && !parseYouTube(p.video)) errs.push(`${n}: el link de video no es de YouTube o está incompleto.`);
     if (!String(p.role?.es || '').trim() || !(p.highlights?.es || []).length) warns.push(n);
   });
   return {errs, warns};
@@ -461,6 +483,7 @@ function renderList(){
           <div class="thumb">${thumbInner(p)}</div>
           <div class="pmeta"><b>${esc(displayName(p))}</b><span>${esc(p.role?.en || '—')}</span></div>
           ${p.visible === false ? '<span class="badge">Oculto</span>' : ''}
+          ${parseYouTube(p.video) ? '<span class="badge">Video</span>' : ''}
           ${A.pending.has(p) ? '<span class="badge warn">Foto</span>' : ''}
           <div class="arrows">
             <button class="ibtn" data-move="-1" data-idx="${A.data.profiles.indexOf(p)}" ${i === 0 ? 'disabled' : ''} title="Subir">${IC.up}</button>
@@ -524,6 +547,12 @@ function renderEditor(){
       </div>
     </div>
 
+    <label class="f"><span>Video de YouTube <em>opcional · nivel de inglés</em></span>
+      <input type="text" data-f="video" value="${esc(p.video || '')}" placeholder="https://www.youtube.com/watch?v=… o https://youtu.be/…" autocomplete="off">
+      <div class="hint" id="videoHint"></div>
+      <div class="vprev" id="videoPrev"></div>
+    </label>
+
     <label class="f"><span>Foto</span></label>
     <label class="drop" id="drop">
       <input type="file" accept="image/*" id="photoInput">
@@ -538,6 +567,7 @@ function renderEditor(){
     </div>`;
   hydratePhotos(ed);
   checkNameHint();
+  checkVideoHint();
 }
 
 function checkNameHint(){
@@ -545,6 +575,18 @@ function checkNameHint(){
   const words = String(A.sel.firstName || '').trim().split(/\s+/).filter(Boolean);
   if (words.length > 2){ h.className = 'hint warn'; h.textContent = '¿Incluiste el apellido? Cargá solo el nombre; el apellido va únicamente como inicial.'; }
   else { h.className = 'hint'; h.textContent = 'Solo el/los nombre/s de pila.'; }
+}
+
+function checkVideoHint(){
+  const h = $('#videoHint'), pv = $('#videoPrev'); if (!h || !A.sel) return;
+  const raw = String(A.sel.video || '').trim();
+  const v = parseYouTube(raw);
+  if (!raw){ h.className = 'hint'; h.textContent = 'Pegá el link si el perfil tiene video. Si queda vacío, el botón de video no aparece en la landing. El video tiene que ser Público u Oculto (no Privado).'; pv.innerHTML = ''; }
+  else if (!v){ h.className = 'hint warn'; h.textContent = 'No se reconoce como link de YouTube. Copiá el link desde el botón “Compartir” del video.'; pv.innerHTML = ''; }
+  else {
+    h.className = 'hint ok'; h.textContent = 'Link válido. En la landing aparece el botón “English level video”.' + (v.start ? ` Arranca en el segundo ${v.start}.` : '');
+    pv.innerHTML = `<img src="https://i.ytimg.com/vi/${v.id}/mqdefault.jpg" alt=""><a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">Ver en YouTube ↗</a>`;
+  }
 }
 
 function refreshProfileId(p){
@@ -559,7 +601,7 @@ function renderCategories(){
   const cs = A.data.categories;
   $('#page').innerHTML = `
     <div class="panel maxw">
-      <div class="note">Las categorías ordenan los perfiles en la landing (chips de filtro y secciones de “Browse”). El orden de esta lista es el orden en la landing. Solo se pueden eliminar categorías sin perfiles.</div>
+      <div class="note">Las categorías aparecen en el desplegable de la landing y ordenan el slideshow. El orden de esta lista es el orden en la landing. Solo se pueden eliminar categorías sin perfiles.</div>
       <table>
         <thead><tr><th>English</th><th>Español</th><th>ID</th><th></th><th></th></tr></thead>
         <tbody>
@@ -597,10 +639,8 @@ function renderTexts(){
     </div>`;
   $('#page').innerHTML = `
     <div class="panel maxw">
-      <div class="note">Encabezado de la landing, arriba de los filtros por categoría.</div>
-      ${row('eyebrow','Eyebrow')}
+      <div class="note">Título corto que se muestra al lado del logo, en la barra superior de la landing. Conviene que sea breve (ej. “Hire &amp; Scale with us”).</div>
       ${row('title','Título')}
-      ${row('subtitle','Bajada', true)}
     </div>`;
 }
 
@@ -639,7 +679,7 @@ document.addEventListener('click', async e => {
   if (t.id === 'newProfile'){
     if (!A.data.categories.length){ toast('Primero creá al menos una categoría.', true); A.tab = 'categories'; render(); return; }
     const p = { id:'', firstName:'', lastInitial:'', category: A.filterCat !== 'all' ? A.filterCat : A.data.categories[0].id,
-      visible:true, photo:'', role:{en:'',es:''}, highlights:{en:[],es:[]}, _new:true };
+      visible:true, photo:'', video:'', role:{en:'',es:''}, highlights:{en:[],es:[]}, _new:true };
     refreshProfileId(p);
     A.data.profiles.push(p); A.sel = p; A.search = '';
     renderProfiles(); renderTop();
@@ -704,6 +744,7 @@ document.addEventListener('input', e => {
       el.value = v; p.lastInitial = v;
     }
     else if (f.startsWith('highlights.')) setPath(p, f, el.value.split('\n').map(s => s.trim()).filter(Boolean));
+    else if (f === 'video'){ p.video = el.value.trim(); checkVideoHint(); }
     else setPath(p, f, f === 'firstName' ? el.value.replace(/\s{2,}/g,' ') : el.value);
 
     if (f === 'firstName' || f === 'lastInitial'){
