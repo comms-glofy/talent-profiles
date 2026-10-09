@@ -1,38 +1,66 @@
 # Glofy · Talent Profiles
 
-Landing interna para mostrar perfiles a clientes (slideshow + navegación por categorías, EN/ES con EN por defecto) y un admin para cargarlos.
+Landing interna para mostrar perfiles a clientes (slideshow + navegación por categorías, EN/ES con EN por defecto) y un admin para que el equipo cargue y edite perfiles sin tocar código.
 
 ## Archivos
 
-| Archivo | Uso |
-|---|---|
-| `index.html` | Landing. Lee `profiles.json` y las fotos de `photos/`. |
-| `admin.html` | Alta, edición, baja y orden de perfiles; categorías; textos del encabezado. Publica en el repo vía GitHub API. |
-| `profiles.json` | Fuente única de datos (lo escribe el admin). |
-| `photos/` | Fotos subidas desde el admin (JPEG optimizado, máx. 1100 px). |
+| Archivo | Dónde va | Uso |
+|---|---|---|
+| `index.html` | Repo | Landing. Lee `profiles.json` y las fotos de `photos/`. |
+| `admin.html` | Repo | Admin: el equipo entra con su nombre + una clave compartida. |
+| `profiles.json` | Repo | Fuente única de datos (la escribe el admin). |
+| `worker.js` | Cloudflare | Guarda el token de GitHub y publica en nombre del equipo. **No se sube al repo.** |
 
-## Puesta en marcha
+## Cómo funciona
 
-1. Crear el repo `comms-glofy/talent-profiles` y subir `index.html`, `admin.html`, `profiles.json` y este README.
+El equipo nunca ve ni maneja un token. Entra al admin con su nombre y la clave de acceso; al publicar, el Worker guarda todo en el repo en un solo commit (`Update profiles — Nombre`), así queda registrado quién hizo cada cambio. La landing se actualiza para todos en ~1 minuto.
+
+## Puesta en marcha (una sola vez)
+
+### 1. Repo y GitHub Pages
+1. Crear `comms-glofy/talent-profiles` y subir `index.html`, `admin.html`, `profiles.json` y este README.
 2. Settings → Pages → Deploy from branch → `main` / root.
-3. Crear un token fine-grained: Repository access solo este repo, permiso **Contents: Read and write**.
-4. Abrir `…/talent-profiles/admin.html` → pestaña **Conexión** → pegar el token → Guardar y conectar.
 
-Si el repo tiene otro nombre, se cambia en la pestaña Conexión.
+### 2. Worker en Cloudflare
+1. Cloudflare → **Workers & Pages** → **Create** → **Create Worker** → nombre `talent-profiles-api` → **Deploy**.
+2. **Edit code** → borrar el contenido → pegar `worker.js` → **Deploy**.
+3. En el Worker → **Settings → Variables and Secrets** → **Add**, tipo **Secret**:
+   - `GITHUB_TOKEN`: el token fine-grained (Contents: Read and write sobre `talent-profiles`).
+   - `ADMIN_PASSWORD`: la clave que va a usar el equipo.
+4. Copiar la URL del Worker (ej. `https://talent-profiles-api.xxxx.workers.dev`).
+
+### 3. Conectar el admin
+En `admin.html`, al inicio del `<script>`, reemplazar:
+
+```js
+const API_URL = 'https://talent-profiles-api.REEMPLAZAR.workers.dev';
+```
+
+por la URL del paso anterior y subir el archivo al repo.
+
+### 4. Compartir con el equipo
+- Admin: `https://comms-glofy.github.io/talent-profiles/admin.html`
+- Clave: la de `ADMIN_PASSWORD`
+
+## Mantenimiento
+
+- **Cambiar la clave** (alguien se va, la clave circuló): Cloudflare → Worker → Settings → editar `ADMIN_PASSWORD`. Quien esté logueado tiene que volver a ingresar.
+- **Token vencido**: el admin muestra "El token de GitHub del servicio venció…". Generar uno nuevo y reemplazar `GITHUB_TOKEN` en el Worker. Nadie más tiene que hacer nada.
+- **Repo con otro nombre**: agregar en el Worker las variables de texto `GITHUB_REPO` (y `GITHUB_OWNER` / `GITHUB_BRANCH` si hiciera falta).
+- **Admin en otro dominio**: agregar la variable `ALLOWED_ORIGINS` con el dominio (por defecto acepta `https://comms-glofy.github.io`).
 
 ## Regla de nombres
 
-Solo **nombre + inicial del apellido** (ej. "Juan Cruz D."). El admin no tiene campo de apellido: la inicial acepta una sola letra y descarta el resto.
-
-## Flujo del admin
-
-Los cambios quedan en borrador hasta tocar **Publicar cambios**: ahí se suben las fotos nuevas, se guarda `profiles.json` y se borran las fotos reemplazadas o de perfiles eliminados. La landing se actualiza en ~1 minuto (rebuild de GitHub Pages).
+Solo **nombre + inicial del apellido** (ej. "Juan Cruz D."). El admin no tiene campo de apellido y el Worker además recorta cualquier inicial a una sola letra antes de guardar.
 
 ## Links útiles para comercial
 
 - `?lang=es` abre en español
-- `?view=browse` abre la vista por categorías
 - `?cat=sdr` filtra una categoría (ids: `sdr`, `marketing-growth`, `sales-executive`, `account-manager`, `automation`)
 - `?cat=sdr&p=santiago-h` abre directo un perfil
 
-Atajos en el slideshow: ← → para navegar, espacio para autoplay, `F` para modo presentación (pantalla completa).
+Atajos: ← → para navegar, espacio para autoplay, `/` para buscar, `F` para modo presentación.
+
+## Video de nivel de inglés
+
+En el admin, cada perfil tiene un campo opcional "Video de YouTube". Acepta links `youtube.com/watch?v=…`, `youtu.be/…` o Shorts, y respeta el minuto de inicio (`?t=…`). El video tiene que estar como Público u Oculto (no Privado). Si el campo queda vacío, el botón de video no aparece en la landing.
