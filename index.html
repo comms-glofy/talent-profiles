@@ -11,188 +11,228 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#212121;--bg2:#292929;--card:#383838;--lime:#ceff00;
+  --bg:#212121;--bg2:#292929;--card:#383838;--field:#1b1b1b;--lime:#ceff00;
   --txt:#ededed;--mut:#a8a8a8;--line:rgba(237,237,237,.11);
-  --slide-ms:9000ms;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%}
-body{background:var(--bg);color:var(--txt);font-family:Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:Montserrat,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;display:flex;flex-direction:column}
+button,input,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
-/* Top bar */
-.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;padding:14px 28px;background:rgba(33,33,33,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.logo{height:26px;width:auto;display:block}
-.top .sp{flex:1}
+/* ---------- Top bar: logo, title, category, search, language, present ---------- */
+.top{flex:none;position:relative;z-index:30;display:flex;align-items:center;gap:12px;padding:12px 24px;background:var(--bg);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.logo{height:24px;width:auto;display:block;flex:none}
+.site-title{font-size:14px;font-weight:700;color:var(--mut);padding-left:14px;border-left:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tools{display:flex;align-items:center;gap:10px;flex:none}
+
+.select-wrap{position:relative}
+.select-wrap select{appearance:none;-webkit-appearance:none;background:var(--field);border:1px solid var(--line);border-radius:999px;padding:9px 38px 9px 16px;font-size:13px;font-weight:700;cursor:pointer;min-width:190px;max-width:240px;transition:border-color .2s}
+.select-wrap select:hover,.select-wrap select:focus{border-color:var(--lime);outline:none}
+.select-wrap svg{position:absolute;right:14px;top:50%;width:14px;height:14px;transform:translateY(-50%);pointer-events:none;color:var(--lime)}
+.select-wrap select option{background:#2a2a2a;color:var(--txt)}
+
+.search{position:relative}
+.search input{width:260px;background:var(--field);border:1px solid var(--line);border-radius:999px;padding:9px 34px 9px 38px;font-size:13px;font-weight:500;outline:none;transition:border-color .2s,width .2s}
+.search input::placeholder{color:#8a8a8a}
+.search input:focus{border-color:var(--lime)}
+.search .ico{position:absolute;left:14px;top:50%;width:15px;height:15px;transform:translateY(-50%);color:var(--mut);pointer-events:none}
+.search .kbd{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:#777;border:1px solid #444;border-radius:5px;padding:1px 6px;pointer-events:none}
+.search input:focus ~ .kbd,.search input:not(:placeholder-shown) ~ .kbd{display:none}
+.pop{position:absolute;right:0;top:calc(100% + 8px);width:400px;max-height:min(62vh,520px);overflow:auto;background:#2b2b2b;border:1px solid rgba(237,237,237,.16);border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.5);padding:8px;display:none}
+.pop.show{display:block}
+.pop .grp{font-size:10.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--lime);padding:10px 10px 6px}
+.res{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:8px 10px;border-radius:10px}
+.res:hover,.res.hi{background:rgba(206,255,0,.08)}
+.res.cur{box-shadow:inset 3px 0 0 var(--lime)}
+.res .th{width:38px;height:38px;border-radius:10px;overflow:hidden;background:var(--card);flex:none;display:grid;place-items:center;font-weight:800;font-size:12px;color:var(--lime);position:relative}
+.res .th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%}
+.res .mt{flex:1;min-width:0}
+.res b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.res span{display:block;font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.res .vid{flex:none;width:22px;height:22px;border-radius:50%;background:rgba(206,255,0,.14);color:var(--lime);display:grid;place-items:center}
+.res .vid svg{width:9px;height:9px;margin-left:1px}
+.pop .none{padding:22px 12px;text-align:center;color:var(--mut);font-size:13px}
+
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
-.seg button{padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--mut);transition:.2s}
+.seg button{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--mut);transition:.2s}
 .seg button:hover{color:var(--txt)}
 .seg button.on{background:var(--lime);color:#212121}
-.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:.2s}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:.2s;flex:none}
 .icon-btn:hover{border-color:var(--lime);color:var(--lime)}
 .icon-btn svg{width:17px;height:17px}
+.icon-btn .ex{display:none}
+body.present .icon-btn .en{display:none}
+body.present .icon-btn .ex{display:block}
 
-/* Hero */
-.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
-.hero{padding-top:44px}
-.eyebrow{color:var(--lime);font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
-.hero h1{font-size:clamp(28px,4vw,46px);font-weight:800;line-height:1.08;margin:12px 0;letter-spacing:-.015em;max-width:900px}
-.hero p{color:var(--mut);max-width:760px;font-size:16px;line-height:1.6}
-
-/* Category chips */
-.chips{display:flex;gap:8px;flex-wrap:wrap;padding-top:26px}
-.chip{padding:9px 16px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;display:inline-flex;gap:8px;align-items:center;transition:.2s}
-.chip:hover{border-color:rgba(206,255,0,.5)}
-.chip .n{font-size:11px;color:var(--mut);font-weight:700}
-.chip.on{background:var(--lime);border-color:var(--lime);color:#212121}
-.chip.on .n{color:#212121;opacity:.7}
-
-main{padding-top:28px;padding-bottom:64px}
-
-/* Slideshow */
-.stage{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:28px;overflow:hidden}
+/* ---------- Stage (fills the screen, no scroll) ---------- */
+main{flex:1;min-height:0;padding:18px 24px 10px;display:flex;flex-direction:column}
+.stage{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line);border-radius:24px;overflow:hidden;max-width:1440px;width:100%;margin:0 auto}
 .progress{position:absolute;left:0;top:0;height:3px;width:0;background:var(--lime);z-index:3}
-.viewport{min-height:580px;display:flex;align-items:stretch}
-.slide{width:100%;display:grid;grid-template-columns:minmax(240px,400px) 1fr;gap:52px;padding:48px 56px;align-items:center;animation:slideIn .55s cubic-bezier(.2,.7,.2,1)}
-@keyframes slideIn{from{opacity:0;transform:translateX(var(--dx,36px))}to{opacity:1;transform:none}}
-.photo{position:relative;aspect-ratio:4/5;border-radius:22px;overflow:hidden;background:var(--card)}
-.photo img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center 22%;display:block}
-.avatar{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;color:var(--lime);letter-spacing:-.02em;background:radial-gradient(120% 90% at 30% 15%,#474747 0%,#2f2f2f 55%,#262626 100%)}
-.slide .avatar{font-size:clamp(64px,9vw,120px)}
-.photo .tag{position:absolute;z-index:2;left:16px;bottom:16px;background:var(--lime);color:#212121;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;border-radius:999px;max-width:calc(100% - 32px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.info .eyebrow{display:block;margin-bottom:14px}
-.info h2{font-size:clamp(34px,4.6vw,60px);font-weight:800;line-height:1;letter-spacing:-.02em}
-.info .role{font-size:clamp(15px,1.5vw,19px);color:var(--mut);margin:14px 0 30px;font-weight:500;line-height:1.4}
-.hl{list-style:none;display:grid;gap:14px}
-.hl li{position:relative;padding-left:26px;font-size:clamp(14px,1.25vw,16px);line-height:1.55;opacity:0;animation:fadeUp .5s ease forwards}
-.hl li:before{content:"";position:absolute;left:0;top:.5em;width:10px;height:10px;border-radius:3px;background:var(--lime)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.viewport{flex:1;min-height:0;display:flex}
+.slide{flex:1;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:clamp(28px,4vw,64px);padding:clamp(20px,3.6vh,44px) clamp(24px,3.8vw,60px);animation:slideIn .5s cubic-bezier(.2,.7,.2,1)}
+@keyframes slideIn{from{opacity:0;transform:translateX(var(--dx,32px))}to{opacity:1;transform:none}}
 
-.ctrl{display:flex;align-items:center;gap:14px;padding:16px 24px;border-top:1px solid var(--line)}
-.counter{font-weight:800;font-size:14px;letter-spacing:.08em;min-width:72px;font-variant-numeric:tabular-nums}
-.counter b{color:var(--lime)}
-.dots{display:flex;gap:6px;flex:1;justify-content:center;flex-wrap:wrap}
-.dot{width:8px;height:8px;border-radius:999px;background:rgba(237,237,237,.25);transition:.3s;padding:0}
-.dot:hover{background:rgba(237,237,237,.55)}
-.dot.on{width:28px;background:var(--lime)}
-.nav{width:46px;height:46px;border-radius:50%;background:var(--card);display:grid;place-items:center;transition:.2s;flex:none}
-.nav:hover{background:var(--lime);color:#212121}
-.nav svg{width:18px;height:18px}
+.photo{position:relative;height:100%;max-height:640px;aspect-ratio:4/5;max-width:38vw;align-self:center;border-radius:20px;overflow:hidden;background:var(--card)}
+.photo img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;object-position:center 22%;display:block}
+.avatar{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;color:var(--lime);letter-spacing:-.02em;font-size:clamp(56px,12vh,120px);background:radial-gradient(120% 90% at 30% 15%,#474747 0%,#2f2f2f 55%,#262626 100%)}
+.photo .tag{position:absolute;z-index:2;left:14px;bottom:14px;background:var(--lime);color:#212121;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;border-radius:999px;max-width:calc(100% - 28px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.info{min-height:0;overflow:auto;display:flex;flex-direction:column;padding-right:6px;scrollbar-width:thin;scrollbar-color:#555 transparent}
+.info-in{margin:auto 0}
+.info .eyebrow{display:block;color:var(--lime);font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:clamp(8px,1.4vh,14px)}
+.info h2{font-size:clamp(30px,min(4.4vw,7vh),60px);font-weight:800;line-height:1;letter-spacing:-.02em}
+.info .role{font-size:clamp(14px,min(1.45vw,2.3vh),19px);color:var(--mut);margin-top:clamp(8px,1.4vh,14px);font-weight:500;line-height:1.4}
+.vbtn{display:inline-flex;align-items:center;gap:10px;margin-top:clamp(14px,2.2vh,22px);padding:8px 16px 8px 8px;border-radius:999px;border:1px solid rgba(206,255,0,.45);background:rgba(206,255,0,.07);color:var(--txt);font-size:13px;font-weight:700;transition:.2s}
+.vbtn:hover{background:var(--lime);color:#212121;border-color:var(--lime)}
+.vbtn i{width:28px;height:28px;border-radius:50%;background:var(--lime);color:#212121;display:grid;place-items:center;flex:none}
+.vbtn:hover i{background:#212121;color:var(--lime)}
+.vbtn svg{width:11px;height:11px;margin-left:2px}
+.hl{list-style:none;display:grid;gap:clamp(8px,1.5vh,14px);margin-top:clamp(16px,2.8vh,28px)}
+.hl li{position:relative;padding-left:24px;font-size:clamp(13px,min(1.2vw,2vh),16.5px);line-height:1.52;opacity:0;animation:fadeUp .45s ease forwards}
+.hl li:before{content:"";position:absolute;left:0;top:.5em;width:9px;height:9px;border-radius:3px;background:var(--lime)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.ctrl{flex:none;display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid var(--line)}
+.ctrl .sp{flex:1}
 .play{display:inline-flex;align-items:center;gap:8px;padding:0 14px;height:38px;border-radius:999px;border:1px solid var(--line);font-size:12px;font-weight:700;letter-spacing:.06em;transition:.2s}
 .play:hover,.play.on{border-color:var(--lime);color:var(--lime)}
-.play svg{width:14px;height:14px}
+.play svg{width:13px;height:13px}
+.next-name{font-size:12.5px;color:var(--mut);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.next-name b{color:var(--txt);font-weight:700}
+.nav{width:44px;height:44px;border-radius:50%;background:var(--card);display:grid;place-items:center;transition:.2s;flex:none}
+.nav:hover{background:var(--lime);color:#212121}
+.nav svg{width:18px;height:18px}
 
-/* Browse */
-.sec{margin-top:8px}
-.sec+.sec{margin-top:34px}
-.sec-h{display:flex;align-items:center;gap:12px;margin:10px 0 16px}
-.sec-h h3{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--lime);font-weight:700}
-.sec-h .line{flex:1;height:1px;background:var(--line)}
-.sec-h .n{font-size:12px;color:var(--mut);font-weight:600}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
-.card{background:var(--bg2);border:1px solid var(--line);border-radius:20px;overflow:hidden;text-align:left;transition:transform .25s,border-color .25s;display:flex;flex-direction:column}
-.card:hover{border-color:var(--lime);transform:translateY(-3px)}
-.card .photo{aspect-ratio:4/3;border-radius:0}
-.card .avatar{font-size:64px}
-.card .b{padding:18px 20px 8px;flex:1}
-.card h4{font-size:21px;font-weight:800;letter-spacing:-.01em}
-.card .role{font-size:13px;color:var(--mut);margin:5px 0 12px;line-height:1.4}
-.card .lead{font-size:13px;line-height:1.55;opacity:.88;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.card .more{padding:12px 20px 18px;font-size:12px;font-weight:700;color:var(--lime);letter-spacing:.06em;display:flex;align-items:center;gap:6px}
-.card .more svg{width:14px;height:14px}
+.state{margin:auto;padding:60px 20px;text-align:center;color:var(--mut);font-weight:600}
+footer{flex:none;padding:6px 24px 10px;color:#7d7d7d;font-size:11px;text-align:center}
 
-.state{padding:80px 20px;text-align:center;color:var(--mut);font-weight:600}
+/* ---------- Video modal ---------- */
+.modal{position:fixed;inset:0;z-index:100;background:rgba(10,10,10,.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px}
+.modal.show{display:flex}
+.modal-box{width:min(1100px,100%,calc((100vh - 140px) * 16 / 9));display:flex;flex-direction:column;gap:12px}
+.modal-head{display:flex;align-items:center;gap:12px}
+.modal-head b{font-size:16px;font-weight:800}
+.modal-head span{color:var(--mut);font-size:13px;font-weight:600}
+.modal-head .sp{flex:1}
+.frame{position:relative;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 
-footer{border-top:1px solid var(--line);padding:22px 28px;color:var(--mut);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* ---------- Present mode: same interface, fullscreen, no footer ---------- */
+body.present footer{display:none}
+body.present main{padding:12px 16px 14px}
+body.present .stage{max-width:none;border-radius:18px}
 
-/* Present mode (fullscreen) */
-body.present .top,body.present .hero-block,body.present footer{display:none}
-body.present main{padding:0;max-width:none}
-body.present .stage{position:fixed;inset:0;border-radius:0;border:0;display:flex;flex-direction:column;z-index:40}
-body.present .viewport{flex:1}
-body.present .slide{max-width:1400px;margin:0 auto;padding:56px 72px;grid-template-columns:minmax(280px,460px) 1fr;gap:72px}
-.present-logo{display:none}
-body.present .present-logo{display:block;position:absolute;top:26px;right:32px;height:24px;z-index:3;opacity:.9}
-
-@media (max-width:860px){
-  .top{padding:12px 16px;gap:8px;flex-wrap:wrap}
-  .logo{height:22px}
-  .wrap{padding:0 16px}
-  .hero{padding-top:28px}
-  .slide{grid-template-columns:1fr;gap:24px;padding:22px}
-  .slide .photo{aspect-ratio:1/1;max-height:360px}
-  .viewport{min-height:0}
-  .ctrl{padding:12px 14px;gap:8px}
+/* ---------- Small screens: natural scrolling layout ---------- */
+@media (max-width:900px), (max-height:540px){
+  html,body{height:auto}
+  body{display:block}
+  .top{position:sticky;top:0;flex-wrap:wrap;padding:10px 16px;gap:10px}
+  .brand{flex:1 1 100%}
+  .tools{flex:1 1 100%;flex-wrap:wrap}
+  .select-wrap{flex:1 1 160px}
+  .select-wrap select{width:100%;max-width:none;min-width:0}
+  .search{flex:1 1 200px}
+  .search input{width:100%}
+  .pop{width:auto;left:0;right:0}
+  .search .kbd{display:none}
+  main{padding:14px 16px 8px;display:block}
+  .stage{display:block}
+  .viewport{display:block}
+  .slide{display:block;padding:18px}
+  .photo{height:auto;width:100%;max-width:none;max-height:none;aspect-ratio:1/1}
+  .info{overflow:visible;padding:0;margin-top:20px}
+  .info h2{font-size:34px}
+  .info .role{font-size:16px}
+  .hl li{font-size:14.5px}
+  .ctrl{padding:10px 14px;gap:8px}
   .play span{display:none}
   .play{padding:0 11px}
-  .dots{gap:4px}
-  body.present .slide{padding:64px 22px 22px;grid-template-columns:1fr;gap:24px}
-  footer{padding:20px 16px}
+  .next-name{display:none}
+  .site-title{font-size:13px}
 }
-@media (prefers-reduced-motion:reduce){
-  .slide,.hl li{animation:none;opacity:1}
-}
+@media (max-width:420px){ .site-title{display:none} }
+@media (prefers-reduced-motion:reduce){ .slide,.hl li{animation:none;opacity:1} }
 </style>
 </head>
 <body>
 
 <header class="top">
-  <img class="logo" src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png" alt="Glofy">
-  <div class="sp"></div>
-  <div class="seg" id="viewSeg" role="group" aria-label="View">
-    <button data-view="slides" class="on"></button>
-    <button data-view="browse"></button>
+  <div class="brand">
+    <img class="logo" src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png" alt="Glofy">
+    <span class="site-title" id="title"></span>
   </div>
-  <div class="seg" id="langSeg" role="group" aria-label="Language">
-    <button data-lang="en" class="on">EN</button>
-    <button data-lang="es">ES</button>
+  <div class="tools">
+    <label class="select-wrap" title="">
+      <select id="catSel" aria-label="Category"></select>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </label>
+    <div class="search" id="search">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="search" id="q" autocomplete="off" spellcheck="false" placeholder=" " aria-label="Search" aria-controls="pop" aria-expanded="false">
+      <span class="kbd">/</span>
+      <div class="pop" id="pop" role="listbox"></div>
+    </div>
+    <div class="seg" id="langSeg" role="group" aria-label="Language">
+      <button data-lang="en" class="on">EN</button>
+      <button data-lang="es">ES</button>
+    </div>
+    <button class="icon-btn" id="presentBtn">
+      <svg class="en" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+      <svg class="ex" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
+    </button>
   </div>
-  <button class="icon-btn" id="presentBtn" title="Present">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-  </button>
 </header>
 
-<div class="hero-block">
-  <section class="wrap hero">
-    <span class="eyebrow" id="eyebrow"></span>
-    <h1 id="title"></h1>
-    <p id="subtitle"></p>
-  </section>
-  <nav class="wrap chips" id="chips" aria-label="Categories"></nav>
+<main id="main"><div class="state" id="state"></div></main>
+
+<footer id="footNote"></footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <b id="mTitle"></b><span id="mSub"></span>
+      <div class="sp"></div>
+      <button class="icon-btn" id="mClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="frame" id="frame"></div>
+  </div>
 </div>
-
-<main class="wrap" id="main">
-  <div class="state" id="state"></div>
-</main>
-
-<footer>
-  <span>© Glofy</span>
-  <span id="footNote"></span>
-</footer>
 
 <script>
 const DATA_URL = 'profiles.json';
 const SLIDE_MS = 9000;
 
 const I18N = {
-  en:{slides:'Slideshow',browse:'Browse',all:'All profiles',view:'View profile',loading:'Loading profiles…',
-      error:'Profiles could not be loaded. Please try again later.',empty:'No profiles in this category yet.',
-      play:'Autoplay',pause:'Pause',present:'Present',exit:'Exit',profiles:'profiles',profile:'profile',
-      foot:'Internal use · Profiles shared for evaluation purposes only'},
-  es:{slides:'Presentación',browse:'Explorar',all:'Todos los perfiles',view:'Ver perfil',loading:'Cargando perfiles…',
-      error:'No se pudieron cargar los perfiles. Intentá nuevamente más tarde.',empty:'Todavía no hay perfiles en esta categoría.',
-      play:'Auto',pause:'Pausa',present:'Presentar',exit:'Salir',profiles:'perfiles',profile:'perfil',
-      foot:'Uso interno · Perfiles compartidos solo para evaluación'}
+  en:{allCats:'All categories',search:'Search name, role or skill',noResults:'No matching profiles.',video:'English level video',
+      play:'Autoplay',pause:'Pause',next:'Next',present:'Present (fullscreen)',exitPresent:'Exit presentation',
+      loading:'Loading profiles…',error:'Profiles could not be loaded. Please try again later.',empty:'No profiles in this category yet.',
+      close:'Close',foot:'Internal use · Profiles shared for evaluation purposes only'},
+  es:{allCats:'Todas las categorías',search:'Buscar nombre, rol o skill',noResults:'No hay perfiles que coincidan.',video:'Video: nivel de inglés',
+      play:'Auto',pause:'Pausa',next:'Siguiente',present:'Presentar (pantalla completa)',exitPresent:'Salir de la presentación',
+      loading:'Cargando perfiles…',error:'No se pudieron cargar los perfiles. Intentá nuevamente más tarde.',empty:'Todavía no hay perfiles en esta categoría.',
+      close:'Cerrar',foot:'Uso interno · Perfiles compartidos solo para evaluación'}
 };
 
-const S = {data:null,lang:'en',view:'slides',cat:'all',idx:0,playing:false,timer:null,dir:1};
+const S = {data:null,lang:'en',cat:'all',idx:0,playing:false,timer:null,dir:1,q:'',hi:-1,results:[]};
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const t = k => I18N[S.lang][k] || I18N.en[k] || k;
 const L = o => (o && (o[S.lang] || o.en)) || '';
 const LA = o => { const a = o && (o[S.lang] && o[S.lang].length ? o[S.lang] : o.en); return Array.isArray(a) ? a.filter(Boolean) : []; };
+const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+
+const ICON = {
+  l:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  r:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>'
+};
 
 /* Name rule: first name + last-name initial only, always. */
 function displayName(p){
@@ -201,13 +241,30 @@ function displayName(p){
   return ini ? `${first} ${ini}.` : first;
 }
 function initials(p){
-  const f = String(p.firstName || '').trim().charAt(0).toUpperCase();
-  const l = String(p.lastInitial || '').trim().charAt(0).toUpperCase();
-  return f + l;
+  return (String(p.firstName || '').trim().charAt(0) + String(p.lastInitial || '').trim().charAt(0)).toUpperCase();
 }
+
+/* YouTube: accepts watch?v=, youtu.be/, shorts/, embed/, live/ links (and an optional t= start time) */
+function parseYouTube(url){
+  const ok = s => /^[\w-]{11}$/.test(s || '') ? s : '';
+  if (!url) return null;
+  let id = '', start = 0;
+  try{
+    const u = new URL(String(url).trim());
+    const host = u.hostname.replace(/^(www|m|music)\./,'');
+    if (host === 'youtu.be') id = ok(u.pathname.split('/')[1]);
+    else if (/(^|\.)youtube(-nocookie)?\.com$/.test(host)){
+      id = ok(u.searchParams.get('v')) || ok((u.pathname.match(/^\/(?:embed|shorts|live|v)\/([\w-]{11})/) || [])[1]);
+    }
+    const tm = u.searchParams.get('t') || u.searchParams.get('start') || '';
+    const m = String(tm).match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+    if (m) start = (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0);
+  }catch(e){ id = ok(String(url).trim()); }
+  return id ? {id, start} : null;
+}
+
 function catById(id){ return (S.data.categories || []).find(c => c.id === id); }
 function catName(id){ const c = catById(id); return c ? L(c.name) : ''; }
-
 function visibleProfiles(){
   const cats = (S.data.categories || []).map(c => c.id);
   return (S.data.profiles || [])
@@ -220,70 +277,60 @@ function currentList(){
   const all = visibleProfiles();
   return S.cat === 'all' ? all : all.filter(p => p.category === S.cat);
 }
+function currentProfile(){ return currentList()[S.idx]; }
 
-function photoHTML(p, withTag){
-  const tag = withTag ? `<span class="tag">${esc(catName(p.category))}</span>` : '';
+function photoInner(p){
   const av = `<div class="avatar">${esc(initials(p))}</div>`;
-  if (!p.photo) return `<div class="photo">${av}${tag}</div>`;
-  return `<div class="photo">${av}<img src="${esc(p.photo)}" alt="${esc(displayName(p))}" loading="lazy" onerror="this.remove()">${tag}</div>`;
+  return p.photo ? `${av}<img src="${esc(p.photo)}" alt="${esc(displayName(p))}" onerror="this.remove()">` : av;
 }
 
-/* ---------- Static texts ---------- */
-function renderTexts(){
+/* ---------- Header ---------- */
+function renderHeader(){
   document.documentElement.lang = S.lang;
-  const site = S.data?.site || {};
-  $('#eyebrow').textContent = L(site.eyebrow);
-  $('#title').textContent = L(site.title);
-  $('#subtitle').textContent = L(site.subtitle);
+  $('#title').textContent = S.data ? L(S.data.site?.title) : '';
   $('#footNote').textContent = t('foot');
-  document.querySelectorAll('#viewSeg button').forEach(b => { b.textContent = t(b.dataset.view); b.classList.toggle('on', b.dataset.view === S.view); });
+  $('#q').placeholder = t('search');
+  $('#presentBtn').title = document.body.classList.contains('present') ? t('exitPresent') : t('present');
+  $('#mClose').setAttribute('aria-label', t('close'));
   document.querySelectorAll('#langSeg button').forEach(b => b.classList.toggle('on', b.dataset.lang === S.lang));
-  $('#presentBtn').title = t('present');
-}
-
-function renderChips(){
+  if (!S.data) return;
   const all = visibleProfiles();
-  const items = [{id:'all', label:t('all'), n:all.length}]
-    .concat((S.data.categories || []).map(c => ({id:c.id, label:L(c.name), n:all.filter(p => p.category === c.id).length})).filter(c => c.n > 0));
-  $('#chips').innerHTML = items.map(c =>
-    `<button class="chip ${c.id === S.cat ? 'on' : ''}" data-cat="${esc(c.id)}">${esc(c.label)}<span class="n">${c.n}</span></button>`).join('');
+  const cats = (S.data.categories || []).filter(c => all.some(p => p.category === c.id));
+  $('#catSel').innerHTML = `<option value="all">${esc(t('allCats'))}</option>` +
+    cats.map(c => `<option value="${esc(c.id)}">${esc(L(c.name))}</option>`).join('');
+  $('#catSel').value = S.cat;
 }
 
-/* ---------- Slideshow ---------- */
-const ICON_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>';
-const ICON_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
-const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>';
-const ICON_PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
-
-function renderSlides(){
+/* ---------- Slide ---------- */
+function renderSlide(){
   const list = currentList();
   if (!list.length){ $('#main').innerHTML = `<div class="state">${esc(t('empty'))}</div>`; return; }
   if (S.idx >= list.length) S.idx = 0;
   if (S.idx < 0) S.idx = list.length - 1;
   const p = list[S.idx];
-  const hl = LA(p.highlights);
-  const pad = n => String(n).padStart(2,'0');
+  const next = list.length > 1 ? list[(S.idx + 1) % list.length] : null;
+  const vid = parseYouTube(p.video);
   $('#main').innerHTML = `
     <section class="stage" aria-roledescription="carousel">
       <div class="progress" id="progress"></div>
-      <img class="present-logo" src="https://raw.githubusercontent.com/comms-glofy/glofy-assets/refs/heads/main/logo-rebrand-glofy.png" alt="Glofy">
       <div class="viewport" id="viewport">
-        <article class="slide" style="--dx:${S.dir * 36}px" aria-label="${esc(displayName(p))}">
-          ${photoHTML(p, true)}
-          <div class="info">
+        <article class="slide" style="--dx:${S.dir * 32}px" aria-label="${esc(displayName(p))}">
+          <div class="photo">${photoInner(p)}<span class="tag">${esc(catName(p.category))}</span></div>
+          <div class="info"><div class="info-in">
             <span class="eyebrow">${esc(catName(p.category))}</span>
             <h2>${esc(displayName(p))}</h2>
             <div class="role">${esc(L(p.role))}</div>
-            <ul class="hl">${hl.map((h,i) => `<li style="animation-delay:${120 + i*70}ms">${esc(h)}</li>`).join('')}</ul>
-          </div>
+            ${vid ? `<button class="vbtn" id="videoBtn"><i>${ICON.play}</i>${esc(t('video'))}</button>` : ''}
+            <ul class="hl">${LA(p.highlights).map((h,i) => `<li style="animation-delay:${100 + i*60}ms">${esc(h)}</li>`).join('')}</ul>
+          </div></div>
         </article>
       </div>
       <div class="ctrl">
-        <span class="counter"><b>${pad(S.idx + 1)}</b> / ${pad(list.length)}</span>
-        <div class="dots">${list.map((x,i) => `<button class="dot ${i === S.idx ? 'on' : ''}" data-go="${i}" aria-label="${esc(displayName(x))}"></button>`).join('')}</div>
-        <button class="play ${S.playing ? 'on' : ''}" id="playBtn">${S.playing ? ICON_PAUSE : ICON_PLAY}<span>${esc(S.playing ? t('pause') : t('play'))}</span></button>
-        <button class="nav" data-step="-1" aria-label="Previous">${ICON_L}</button>
-        <button class="nav" data-step="1" aria-label="Next">${ICON_R}</button>
+        ${list.length > 1 ? `<button class="play ${S.playing ? 'on' : ''}" id="playBtn">${S.playing ? ICON.pause : ICON.play}<span>${esc(S.playing ? t('pause') : t('play'))}</span></button>` : ''}
+        <div class="sp"></div>
+        ${next ? `<span class="next-name">${esc(t('next'))}: <b>${esc(displayName(next))}</b></span>
+        <button class="nav" data-step="-1" aria-label="Previous">${ICON.l}</button>
+        <button class="nav" data-step="1" aria-label="Next">${ICON.r}</button>` : ''}
       </div>
     </section>`;
   startProgress();
@@ -291,9 +338,9 @@ function renderSlides(){
 
 function go(i, dir){
   const n = currentList().length; if (!n) return;
-  S.dir = dir || (i > S.idx ? 1 : -1);
+  S.dir = dir || (i >= S.idx ? 1 : -1);
   S.idx = (i + n) % n;
-  renderSlides(); syncURL();
+  renderSlide(); syncURL();
 }
 function step(d){ go(S.idx + d, d); }
 
@@ -301,82 +348,149 @@ function startProgress(){
   clearTimeout(S.timer);
   const bar = $('#progress'); if (!bar) return;
   bar.style.transition = 'none'; bar.style.width = '0';
-  if (!S.playing) return;
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    bar.style.transition = `width ${SLIDE_MS}ms linear`; bar.style.width = '100%';
-  }));
+  if (!S.playing || currentList().length < 2) return;
+  requestAnimationFrame(() => requestAnimationFrame(() => { bar.style.transition = `width ${SLIDE_MS}ms linear`; bar.style.width = '100%'; }));
   S.timer = setTimeout(() => step(1), SLIDE_MS);
 }
-function togglePlay(){ S.playing = !S.playing; renderSlides(); }
+function setPlaying(v){ S.playing = v; renderSlide(); }
 
-/* ---------- Browse ---------- */
-const ICON_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-function renderBrowse(){
-  clearTimeout(S.timer);
-  const list = currentList();
-  if (!list.length){ $('#main').innerHTML = `<div class="state">${esc(t('empty'))}</div>`; return; }
-  const cats = (S.data.categories || []).filter(c => list.some(p => p.category === c.id));
-  $('#main').innerHTML = cats.map(c => {
-    const ps = list.filter(p => p.category === c.id);
-    return `<section class="sec">
-      <div class="sec-h"><h3>${esc(L(c.name))}</h3><span class="line"></span><span class="n">${ps.length} ${esc(ps.length === 1 ? t('profile') : t('profiles'))}</span></div>
-      <div class="grid">${ps.map(p => `
-        <button class="card" data-open="${esc(p.id)}">
-          ${photoHTML(p, false)}
-          <div class="b">
-            <h4>${esc(displayName(p))}</h4>
-            <div class="role">${esc(L(p.role))}</div>
-            <div class="lead">${esc(LA(p.highlights)[0] || '')}</div>
-          </div>
-          <div class="more">${esc(t('view'))} ${ICON_ARROW}</div>
-        </button>`).join('')}</div>
-    </section>`;
-  }).join('');
+/* ---------- Search ---------- */
+function searchResults(){
+  const q = norm(S.q).trim();
+  const all = visibleProfiles();
+  if (!q) return all;
+  const words = q.split(/\s+/);
+  return all.map(p => {
+    const name = norm(displayName(p));
+    const role = norm([p.role?.en, p.role?.es].join(' '));
+    const cat = norm([catById(p.category)?.name?.en, catById(p.category)?.name?.es].join(' '));
+    const hl = norm([...(p.highlights?.en || []), ...(p.highlights?.es || [])].join(' '));
+    let score = 0;
+    for (const w of words){
+      if (name.startsWith(w) || name.includes(' ' + w)) score += 8;
+      else if (name.includes(w)) score += 6;
+      else if (role.includes(w)) score += 4;
+      else if (cat.includes(w)) score += 3;
+      else if (hl.includes(w)) score += 1;
+      else return null;
+    }
+    return {p, score};
+  }).filter(Boolean).sort((a,b) => b.score - a.score).map(x => x.p);
 }
+
+function renderPop(){
+  const pop = $('#pop');
+  const res = searchResults();
+  S.results = res;
+  if (S.hi >= res.length) S.hi = res.length - 1;
+  const cur = currentProfile();
+  const item = (p, i) => `
+    <button class="res ${i === S.hi ? 'hi' : ''} ${cur && cur.id === p.id ? 'cur' : ''}" data-pick="${esc(p.id)}" role="option">
+      <span class="th">${esc(initials(p))}${p.photo ? `<img src="${esc(p.photo)}" alt="" onerror="this.remove()">` : ''}</span>
+      <span class="mt"><b>${esc(displayName(p))}</b><span>${esc(L(p.role))}</span></span>
+      ${parseYouTube(p.video) ? `<span class="vid" title="${esc(t('video'))}">${ICON.play}</span>` : ''}
+    </button>`;
+  if (!res.length){ pop.innerHTML = `<div class="none">${esc(t('noResults'))}</div>`; return; }
+  if (S.q.trim()){ pop.innerHTML = res.map(item).join(''); }
+  else {
+    let i = 0;
+    pop.innerHTML = (S.data.categories || []).map(c => {
+      const ps = res.filter(p => p.category === c.id);
+      if (!ps.length) return '';
+      return `<div class="grp">${esc(L(c.name))}</div>` + ps.map(p => item(p, i++)).join('');
+    }).join('');
+    S.results = (S.data.categories || []).flatMap(c => res.filter(p => p.category === c.id));
+  }
+  pop.querySelector('.res.hi')?.scrollIntoView({block:'nearest'});
+}
+function openPop(){ if (!S.data) return; $('#pop').classList.add('show'); $('#q').setAttribute('aria-expanded','true'); renderPop(); }
+function closePop(){ $('#pop').classList.remove('show'); $('#q').setAttribute('aria-expanded','false'); S.hi = -1; }
+
+function pickProfile(id){
+  const p = visibleProfiles().find(x => x.id === id); if (!p) return;
+  if (S.cat !== 'all' && p.category !== S.cat){ S.cat = 'all'; renderHeader(); }
+  const i = currentList().findIndex(x => x.id === id);
+  S.q = ''; $('#q').value = ''; closePop(); $('#q').blur();
+  go(i, 1);
+}
+
+/* ---------- Video modal ---------- */
+function openVideo(){
+  const p = currentProfile(); const v = p && parseYouTube(p.video); if (!v) return;
+  if (S.playing){ S.playing = false; renderSlide(); }
+  $('#mTitle').textContent = displayName(p);
+  $('#mSub').textContent = '· ' + t('video');
+  $('#frame').innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0&modestbranding=1&playsinline=1${v.start ? '&start=' + v.start : ''}" title="${esc(displayName(p))} — ${esc(t('video'))}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  $('#modal').classList.add('show');
+  $('#mClose').focus();
+}
+function closeVideo(){ $('#modal').classList.remove('show'); $('#frame').innerHTML = ''; }
+const modalOpen = () => $('#modal').classList.contains('show');
+
+/* ---------- Present mode (fullscreen, same navigation) ---------- */
+function togglePresent(){
+  const on = !document.body.classList.contains('present');
+  document.body.classList.toggle('present', on);
+  if (on){
+    const el = document.documentElement;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (req) Promise.resolve(req.call(el)).catch(() => {});
+  } else if (document.fullscreenElement){ document.exitFullscreen?.(); }
+  renderHeader();
+}
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && document.body.classList.contains('present')){ document.body.classList.remove('present'); renderHeader(); }
+});
 
 /* ---------- Orchestration ---------- */
-function render(){
-  renderTexts();
-  if (!S.data) return;
-  renderChips();
-  S.view === 'browse' ? renderBrowse() : renderSlides();
-}
+function render(){ renderHeader(); if (S.data) renderSlide(); }
 function syncURL(){
   const q = new URLSearchParams();
   if (S.lang !== 'en') q.set('lang', S.lang);
-  if (S.view !== 'slides') q.set('view', S.view);
   if (S.cat !== 'all') q.set('cat', S.cat);
-  if (S.view === 'slides'){ const p = currentList()[S.idx]; if (p && S.idx > 0) q.set('p', p.id); }
+  const p = currentProfile(); if (p && S.idx > 0) q.set('p', p.id);
   const qs = q.toString();
   history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
 }
 
 document.addEventListener('click', e => {
+  if (e.target === $('#modal')){ closeVideo(); return; }
   const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.lang){ S.lang = b.dataset.lang; render(); syncURL(); }
-  else if (b.dataset.view){ S.view = b.dataset.view; S.playing = false; render(); syncURL(); window.scrollTo({top:0,behavior:'smooth'}); }
-  else if (b.dataset.cat){ S.cat = b.dataset.cat; S.idx = 0; S.dir = 1; render(); syncURL(); }
+  if (b.dataset.lang){ S.lang = b.dataset.lang; render(); syncURL(); if ($('#pop').classList.contains('show')) renderPop(); }
+  else if (b.dataset.pick){ pickProfile(b.dataset.pick); }
   else if (b.dataset.step){ step(+b.dataset.step); }
-  else if (b.dataset.go){ go(+b.dataset.go); }
-  else if (b.dataset.open){
-    const i = currentList().findIndex(p => p.id === b.dataset.open);
-    S.view = 'slides'; S.idx = Math.max(0,i); S.dir = 1; render(); syncURL();
-    const y = $('#chips').getBoundingClientRect().top + window.scrollY - 70;
-    window.scrollTo({top: y, behavior:'smooth'});
-  }
-  else if (b.id === 'playBtn'){ togglePlay(); }
+  else if (b.id === 'playBtn'){ setPlaying(!S.playing); }
+  else if (b.id === 'videoBtn'){ openVideo(); }
+  else if (b.id === 'mClose'){ closeVideo(); }
   else if (b.id === 'presentBtn'){ togglePresent(); }
+});
+document.addEventListener('mousedown', e => { if (!e.target.closest('#search')) closePop(); });
+
+$('#catSel').addEventListener('change', e => { S.cat = e.target.value; S.idx = 0; S.dir = 1; renderSlide(); syncURL(); e.target.blur(); });
+
+$('#q').addEventListener('focus', openPop);
+$('#q').addEventListener('input', e => { S.q = e.target.value; S.hi = S.q.trim() ? 0 : -1; openPop(); });
+$('#q').addEventListener('keydown', e => {
+  const n = S.results.length;
+  if (e.key === 'ArrowDown'){ e.preventDefault(); S.hi = n ? (S.hi + 1) % n : -1; renderPop(); }
+  else if (e.key === 'ArrowUp'){ e.preventDefault(); S.hi = n ? (S.hi - 1 + n) % n : -1; renderPop(); }
+  else if (e.key === 'Enter'){ e.preventDefault(); const p = S.results[S.hi >= 0 ? S.hi : 0]; if (p) pickProfile(p.id); }
+  else if (e.key === 'Escape'){ e.preventDefault(); S.q = ''; e.target.value = ''; closePop(); e.target.blur(); }
 });
 
 document.addEventListener('keydown', e => {
-  if (S.view !== 'slides' || !S.data) return;
-  if (e.key === 'ArrowRight'){ step(1); }
+  if (modalOpen()){ if (e.key === 'Escape') closeVideo(); return; }
+  const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName);
+  if (typing || !S.data) return;
+  if (e.key === '/'){ e.preventDefault(); $('#q').focus(); }
+  else if (e.key === 'ArrowRight'){ step(1); }
   else if (e.key === 'ArrowLeft'){ step(-1); }
-  else if (e.key === ' ' && e.target === document.body){ e.preventDefault(); togglePlay(); }
+  else if (e.key === ' '){ e.preventDefault(); setPlaying(!S.playing); }
   else if (e.key.toLowerCase() === 'f'){ togglePresent(); }
+  else if (e.key === 'Escape' && document.body.classList.contains('present')){ togglePresent(); }
 });
 
-/* Swipe */
+/* Swipe on touch screens */
 let tx = null;
 document.addEventListener('touchstart', e => { if (e.target.closest('.viewport')) tx = e.touches[0].clientX; }, {passive:true});
 document.addEventListener('touchend', e => {
@@ -384,27 +498,11 @@ document.addEventListener('touchend', e => {
   if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
 });
 
-/* Present mode */
-function togglePresent(){
-  if (S.view !== 'slides'){ S.view = 'slides'; render(); }
-  if (!document.body.classList.contains('present')){
-    document.body.classList.add('present');
-    const el = document.documentElement;
-    (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el)?.catch?.(() => {});
-  } else {
-    document.body.classList.remove('present');
-    if (document.fullscreenElement) document.exitFullscreen?.();
-  }
-}
-document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) document.body.classList.remove('present'); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.remove('present'); });
-
 /* Init */
 (async function init(){
   const q = new URLSearchParams(location.search);
   S.lang = q.get('lang') === 'es' ? 'es' : 'en';
-  S.view = q.get('view') === 'browse' ? 'browse' : 'slides';
-  renderTexts();
+  renderHeader();
   $('#state').textContent = t('loading');
   try{
     const r = await fetch(`${DATA_URL}?v=${Date.now()}`, {cache:'no-store'});
